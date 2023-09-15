@@ -17,7 +17,6 @@ int main(void)
 	//--------------------------------------------------------------------------------------
 	const int screenWidth = 800;
 	const int screenHeight = 450;
-
 	font.w = UNO;
 	font.h = 8;
 
@@ -27,28 +26,25 @@ int main(void)
 	int nextscansize = (font.w * font.h);
 	spyBuffer = malloc(sizeof(unsigned char) * spybuffersize);
 
-	file_t *file = (file_t *)malloc(sizeof(file_t));
-	if (!file) return -2;
-	(*file).position = 0;
-	//strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/waxworksfont.raw");
-	strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw");
 
-	
-	//file->fileHandle = fopen("C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font2.raw", "rb"); //DOBLE FONT
-	file->fileHandle = fopen(file->name, "rb");
-	if (!file->fileHandle)
+	//ESTO A OTRA FUNCION YA!
+	//Abrimos Fichero
+	file_t file = { .fileHandle = NULL, .name ='\0', .position = 0, .size = 0};
+	//strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/waxworksfont.raw");
+	strcpy(file.name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw");
+	file.fileHandle = fopen(file.name, "rb");
+	if (!file.fileHandle)
 	{
 		if(spyBuffer) free(spyBuffer);
-		if (file) free(file);
+		//if (file) free(file);
 		CloseWindow();
 		return - 1;
 	}
-	fseek(file->fileHandle, 0L, SEEK_END);
-	file->size = ftell(file->fileHandle);
-	rewind(file->fileHandle);
+	fseek(file.fileHandle, 0L, SEEK_END);
+	file.size = ftell(file.fileHandle);
+	rewind(file.fileHandle);
+	fread(spyBuffer, sizeof(char)*spybuffersize, 1, file.fileHandle);
 
-	fread(spyBuffer, sizeof(char)*spybuffersize, 1, file->fileHandle);
-	//printf("Caracter: %x\n", spyBuffer[0]);
 
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
@@ -74,18 +70,18 @@ int main(void)
 
 		if (IsKeyPressed(KEY_LEFT))
 		{
-			file->position-=nextscansize;
-			if (file->position < 0) file->position = 0;
-			fseek(file->fileHandle, file->position, SEEK_SET);
-			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file->fileHandle);
-			sprintf(positionbuffer, "0x%x", file->position);
+			file.position-=nextscansize;
+			if (file.position < 0) file.position = 0;
+			fseek(file.fileHandle, file.position, SEEK_SET);
+			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
+			sprintf(positionbuffer, "0x%x", file.position);
 		}
-		else if (IsKeyPressed(KEY_RIGHT) && file->position < ((file->size) - nextscansize))
+		else if (IsKeyPressed(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
 		{
-			file->position+= nextscansize;
-			fseek(file->fileHandle, file->position, SEEK_SET);
-			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file->fileHandle);
-			sprintf(positionbuffer, "0x%x", file->position);
+			file.position+= nextscansize;
+			fseek(file.fileHandle, file.position, SEEK_SET);
+			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
+			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		
 
@@ -109,7 +105,7 @@ int main(void)
 			GuiToggleGroup((Rectangle) { 460, 86, 60, 25 }, "8;16", &AnchoValue);			
 
 			if (GuiSpinner((Rectangle) { 461, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
-			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file->name, 127, FileEditMode)) FileEditMode = !FileEditMode;
+			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file.name, 127, FileEditMode)) FileEditMode = !FileEditMode;
 			GuiDrawText("Position: ", (Rectangle) { 410, 180, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { 460, 180, 80, 10 }, 0, BLACK);
 	
@@ -122,8 +118,7 @@ int main(void)
 
 	// De-Initialization
 	if(spyBuffer) free(spyBuffer);
-	if(file->fileHandle) fclose(file->fileHandle);
-	if(file) free(file);
+	if(file.fileHandle) fclose(file.fileHandle);
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
