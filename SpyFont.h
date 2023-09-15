@@ -12,8 +12,6 @@ typedef struct
 	int h;		//alto
 }fontattr_t;
 
-unsigned char *spyBuffer;
-
 typedef struct
 {
 	long position;
@@ -23,3 +21,4 @@ typedef struct
 }file_t;
 
 fontattr_t font;
+unsigned char *spyBuffer;

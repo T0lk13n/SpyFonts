@@ -18,18 +18,20 @@ int main(void)
 	const int screenWidth = 800;
 	const int screenHeight = 450;
 
-
 	font.w = UNO;
 	font.h = 8;
 
-	int spybuffersize = (font.w * font.h);
+	//El buffersize puede ser mas grande siempre y nosotros mostrar solo 
+	//la ventana que corresponda a font.w y font.h
+	int spybuffersize = (font.w * font.h)*2;
+	int nextscansize = (font.w * font.h);
 	spyBuffer = malloc(sizeof(unsigned char) * spybuffersize);
 
 	file_t *file = (file_t *)malloc(sizeof(file_t));
 	if (!file) return -2;
 	(*file).position = 0;
-	strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/waxworksfont.raw");
-
+	//strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/waxworksfont.raw");
+	strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw");
 
 	
 	//file->fileHandle = fopen("C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font2.raw", "rb"); //DOBLE FONT
@@ -51,10 +53,10 @@ int main(void)
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
 	bool MainWindowActive = true;
-	bool AnchoEditMode = false;
-	int AnchoValue = 0;
+	//bool AnchoEditMode = false;
+	int AnchoValue = font.w-1;
 	bool AltoEditMode = false;
-	int AltoValue = 0;
+	int AltoValue = font.h;
 	bool FileEditMode = false;
 	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
@@ -66,27 +68,26 @@ int main(void)
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		font.w = AnchoValue + 1;
+		font.h = AltoValue;
+		nextscansize = (font.w * font.h);
 
-
-
-		if (IsKeyPressed(KEY_LEFT) && file->position >= spybuffersize)
+		if (IsKeyPressed(KEY_LEFT))
 		{
-			file->position-=spybuffersize;
+			file->position-=nextscansize;
+			if (file->position < 0) file->position = 0;
 			fseek(file->fileHandle, file->position, SEEK_SET);
 			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file->fileHandle);
-			printf("Position: 0x%x\n", file->position);
 			sprintf(positionbuffer, "0x%x", file->position);
 		}
-		else if (IsKeyPressed(KEY_RIGHT) && file->position < ((file->size) - spybuffersize))
+		else if (IsKeyPressed(KEY_RIGHT) && file->position < ((file->size) - nextscansize))
 		{
-			file->position+= spybuffersize;
+			file->position+= nextscansize;
 			fseek(file->fileHandle, file->position, SEEK_SET);
 			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file->fileHandle);
-			printf("Position: 0x%x\n", file->position);
 			sprintf(positionbuffer, "0x%x", file->position);
 		}
 		
-		//printf("Ancho Value: %d\n", AnchoValue);
 
 		// Draw
 		//----------------------------------------------------------------------------------
@@ -103,7 +104,10 @@ int main(void)
 		{
 			MainWindowActive = !GuiWindowBox((Rectangle) { 402, 26, 201, 272 }, "Amiga SpyFonts");
 			GuiGroupBox((Rectangle) { 407, 69, 189, 99 }, "Font size");
-			if (GuiSpinner((Rectangle) { 461, 86, 119, 25 }, "Width", & AnchoValue, 0, 100, AnchoEditMode)) AnchoEditMode = !AnchoEditMode;
+			//if (GuiSpinner((Rectangle) { 461, 86, 119, 25 }, "Width", & AnchoValue, 0, 100, AnchoEditMode)) AnchoEditMode = !AnchoEditMode;
+			GuiDrawText("Width", (Rectangle) { 430, 95, 80, 10 }, 0, BLACK);
+			GuiToggleGroup((Rectangle) { 460, 86, 60, 25 }, "8;16", &AnchoValue);			
+
 			if (GuiSpinner((Rectangle) { 461, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file->name, 127, FileEditMode)) FileEditMode = !FileEditMode;
 			GuiDrawText("Position: ", (Rectangle) { 410, 180, 80, 10 }, 0, BLACK);
@@ -129,36 +133,29 @@ int main(void)
 
 
 //pinta un rectangulo segun los bits que estan activos
+//si el ancho del font es doble hay que leer una linea de cada
+//char y luego la de abajo etc etc..
+
 void drawChar(unsigned char *charfont)
 {
 	int x = 10;
 	int y = 10;
-	unsigned char mask = 128; //1000 0000 en binario
+	unsigned int mask = 128; //1000 0000 en binario
 
 	for (int j = 1; j <= font.h; j++)
 	{
-		for (int i = 0; i < (font.w * 8); i++)
+		for (int i = 0; i < font.w*8; i++)
 		{
-			if((*charfont & mask) == mask)
+			int index = (i / 8);
+			if((charfont[index] & mask) == mask)
 				DrawRectangle(x*i, y*j, 10, 10, BLACK);
-			//mask /= 2;
-			mask = mask >> 1; 
+			mask = mask >> 1;
+			if (mask == 0) mask = 128;
 		}
-		charfont++;
-		mask = 128;
-		//A LO EXTREMADAMENTE CUTRE DE MOMENTO PARA CUANDO EL FONT.W = DOS
-		if (font.w == DOS)
-		{
-			for (int i = 0; i < (font.w * 8); i++)
-			{
-				if ((*charfont & mask) == mask)
-					DrawRectangle(x+80 * i, y * j, 10, 10, WHITE);
-				//mask /= 2;
-				mask = mask >> 1;
-			}
-			charfont++;
-			mask = 128;
-		}
+		charfont = charfont + font.w;
+		//mask = 128;
+
 	}
 
 }
+
