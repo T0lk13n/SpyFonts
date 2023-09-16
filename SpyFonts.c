@@ -25,8 +25,8 @@ int main(void)
 	nextscansize = (font.w * font.h);
 
 	file_t file;
-	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
-	
+	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw", &file);
+	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
 
 
 	const int screenWidth = 800;
@@ -66,16 +66,15 @@ int main(void)
 			file.position-=nextscansize;
 			if (file.position < 0)
 				file.position = 0;
-			else
-				spyBuffer -= nextscansize;
 
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		else if (IsKeyPressed(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
 		{
+			if (file.position > file.size)
+					file.position = file.size;
 			file.position+= nextscansize;
 			sprintf(positionbuffer, "0x%x", file.position);
-			spyBuffer += nextscansize;
 		}
 		
 		if (GetTextFilename)
@@ -95,7 +94,7 @@ int main(void)
 
 		///ClearBackground(BLACK);
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
-		drawMap();
+		drawMap(file.position, file.size);
 		
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
@@ -137,10 +136,27 @@ int main(void)
 
 //pinta todos los font que puede en la ventana
 //dependiendo de sus caracteristicas
-void drawMap()
+void drawMap(int position, int size)
 {
-	drawChar(spyBuffer, 20, 0);
-	drawChar(&spyBuffer[6], 80, 0);
+	//los 5 son el tamaño de los pixeles hechos en drawchar con DrawRectangule
+	int nextchar = font.w * font.h;
+	int spaceX = 8 * 5;
+	int spaceY = font.h * 5;
+	int maxfonts = (800 / spaceX) * (450 / spaceY);
+
+	for (int y = 1; y < (450/spaceY); y++)
+	{
+		for (int x = 1; x < (800/spaceX); x++)			//800 = screenWidht hardcodeado
+		{
+			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
+			position += nextchar;
+			//Habria que calcular el numero maximo de fonts que se pueden pintar
+			//ver tamaño del buffer y hacer bufferfinal-maxfonts o algo asi
+			if ((position-maxfonts) > size) break;
+		}
+
+	}
+	//drawChar(&spyBuffer[position+nextchar], posX+spaceX, 0);
 }
 
 //pinta un rectangulo segun los bits que estan activos
@@ -150,8 +166,8 @@ void drawMap()
 void drawChar(unsigned char *drawfont, int posx, int posy)
 {
 	unsigned char* charfont = drawfont;
-	int x = 10;
-	int y = 10;
+	int x = 5;
+	int y = 5;
 	unsigned int mask = 128; //1000 0000 en binario
 
 	for (int j = 1; j <= font.h; j++)
@@ -160,7 +176,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 		{
 			int index = (i / 8);
 			if((charfont[index] & mask) == mask)
-				DrawRectangle(posx+x*i, posy+y*j, 10, 10, BLACK);
+				DrawRectangle(posx+x*i, posy+y*j, 5, 5, BLACK);
 			mask = mask >> 1;
 			if (mask == 0) mask = 128;
 		}
@@ -192,6 +208,8 @@ int loadFile(const char* filename, file_t *file)
 
 	//Requerimos nuestra memoria
 	spyBuffer = malloc(sizeof(unsigned char) * file->size);
+	if (!spyBuffer)
+		puts("Cant allocate spyBuffer");
 	fread(spyBuffer, sizeof(char) * file->size, 1, file->fileHandle);
 
 	//Realmente ya no necesitariamos el fichero abierto
