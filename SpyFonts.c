@@ -15,8 +15,6 @@ int main(void)
 
 	// Initialization
 	//--------------------------------------------------------------------------------------
-	const int screenWidth = 800;
-	const int screenHeight = 450;
 	font.w = UNO;
 	font.h = 8;
 
@@ -31,6 +29,8 @@ int main(void)
 	fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
 
 
+	const int screenWidth = 800;
+	const int screenHeight = 450;
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
 	bool MainWindowActive = true;
@@ -57,6 +57,9 @@ int main(void)
 		font.w = AnchoValue + 1;
 		font.h = AltoValue;
 		nextscansize = (font.w * font.h);
+
+		if(IsKeyPressed(KEY_F1))
+			MainWindowActive = !MainWindowActive;
 
 		if (IsKeyPressed(KEY_LEFT))
 		{
@@ -100,20 +103,21 @@ int main(void)
 		//----------------------------------------------------------------------------------
 		if (MainWindowActive)
 		{
-			MainWindowActive = !GuiWindowBox((Rectangle) { 402, 26, 201, 272 }, "Amiga SpyFonts");
-			GuiGroupBox((Rectangle) { 407, 69, 189, 99 }, "Font size");
-			//if (GuiSpinner((Rectangle) { 461, 86, 119, 25 }, "Width", & AnchoValue, 0, 100, AnchoEditMode)) AnchoEditMode = !AnchoEditMode;
-			GuiDrawText("Width", (Rectangle) { 430, 95, 80, 10 }, 0, BLACK);
-			GuiToggleGroup((Rectangle) { 460, 86, 60, 25 }, "8;16", &AnchoValue);			
+			MainWindowActive = !GuiWindowBox((Rectangle) { 542, 26, 201, 272 }, "Amiga SpyFonts - F1 toggle window");
+			
+			GuiGroupBox((Rectangle) { 547, 69, 190, 99 }, "Font size");
+			GuiDrawText("Width", (Rectangle) { 570, 95, 80, 10 }, 0, BLACK);
+			GuiToggleGroup((Rectangle) { 600, 86, 60, 25 }, "8;16", &AnchoValue);			
+			if (GuiSpinner((Rectangle) { 600, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			
+			GuiDrawText("Position: ", (Rectangle) { 550, 180, 80, 10 }, 0, BLACK);
+			GuiDrawText(positionbuffer, (Rectangle) { 600, 180, 80, 10 }, 0, BLACK);
 
-			if (GuiSpinner((Rectangle) { 461, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
-			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, TextFilename, 127, FileEditMode))
+			if (GuiTextBox((Rectangle) { 550, 270, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
 				GetTextFilename = true;
 				FileEditMode = !FileEditMode;
 			}
-			GuiDrawText("Position: ", (Rectangle) { 410, 180, 80, 10 }, 0, BLACK);
-			GuiDrawText(positionbuffer, (Rectangle) { 460, 180, 80, 10 }, 0, BLACK);
 	
 		}
 		//----------------------------------------------------------------------------------
