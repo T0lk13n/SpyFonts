@@ -27,7 +27,7 @@ int main(void)
 	spyBuffer = malloc(sizeof(unsigned char) * spybuffersize);
 
 	file_t file;
-	loadFile("C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw", &file);
+	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
 	fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
 
 
