@@ -142,7 +142,7 @@ void drawMap(int position, int size)
 	int nextchar = font.w * font.h;
 	int spaceX = 8 * 5;
 	int spaceY = font.h * 5;
-	int maxfonts = (800 / spaceX) * (450 / spaceY);
+	int maxfonts = (size / font.h);
 
 	for (int y = 1; y < (450/spaceY); y++)
 	{
@@ -150,13 +150,10 @@ void drawMap(int position, int size)
 		{
 			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
 			position += nextchar;
-			//Habria que calcular el numero maximo de fonts que se pueden pintar
-			//ver tamaño del buffer y hacer bufferfinal-maxfonts o algo asi
-			if ((position-maxfonts) > size) break;
-		}
 
+			if ((position/font.h) >= maxfonts) return;
+		}
 	}
-	//drawChar(&spyBuffer[position+nextchar], posX+spaceX, 0);
 }
 
 //pinta un rectangulo segun los bits que estan activos
@@ -191,6 +188,7 @@ int loadFile(const char* filename, file_t *file)
 {
 	//si tenemos un buffer del fichero anterior lo cerramos
 	if (spyBuffer) free(spyBuffer);
+
 	//Abrimos Fichero
 	file->position = 0;
 	strcpy(file->name, filename);
