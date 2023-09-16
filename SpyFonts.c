@@ -18,15 +18,15 @@ int main(void)
 	font.w = UNO;
 	font.h = 8;
 
-	//El buffersize puede ser mas grande siempre y nosotros mostrar solo 
+	//El buffersize va a ser de todo el tamaño del fichero.
+	// los ficheros de Amiga son pequeños para la memoria que hay.
 	//la ventana que corresponda a font.w y font.h
-	int spybuffersize = (font.w * font.h)*2;
-	int nextscansize = (font.w * font.h);
-	spyBuffer = malloc(sizeof(unsigned char) * spybuffersize);
+	
+	nextscansize = (font.w * font.h);
 
 	file_t file;
 	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
-	fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
+	
 
 
 	const int screenWidth = 800;
@@ -64,27 +64,26 @@ int main(void)
 		if (IsKeyPressed(KEY_LEFT))
 		{
 			file.position-=nextscansize;
-			if (file.position < 0) file.position = 0;
-			fseek(file.fileHandle, file.position, SEEK_SET);
-			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
+			if (file.position < 0)
+				file.position = 0;
+			else
+				spyBuffer -= nextscansize;
+
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		else if (IsKeyPressed(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
 		{
 			file.position+= nextscansize;
-			fseek(file.fileHandle, file.position, SEEK_SET);
-			fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
 			sprintf(positionbuffer, "0x%x", file.position);
+			spyBuffer += nextscansize;
 		}
 		
 		if (GetTextFilename)
 		{
 			if (_stricmp(file.name, TextFilename) != 0)
 			{
-				strcpy(file.name, TextFilename);
 				if (file.fileHandle) fclose(file.fileHandle);		//por si tenemos otro file abierto antes
-				loadFile(file.name, &file);
-				//printf("Edit file %s\n", file.name);
+				loadFile(TextFilename, &file);
 			}
 			GetTextFilename = false;
 		}
@@ -96,8 +95,7 @@ int main(void)
 
 		///ClearBackground(BLACK);
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
-		drawChar(spyBuffer);
-
+		drawMap();
 		
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
@@ -137,12 +135,21 @@ int main(void)
 }
 
 
+//pinta todos los font que puede en la ventana
+//dependiendo de sus caracteristicas
+void drawMap()
+{
+	drawChar(spyBuffer, 20, 0);
+	drawChar(&spyBuffer[6], 80, 0);
+}
+
 //pinta un rectangulo segun los bits que estan activos
 //si el ancho del font es doble hay que leer una linea de cada
 //char y luego la de abajo etc etc..
 
-void drawChar(unsigned char *charfont)
+void drawChar(unsigned char *drawfont, int posx, int posy)
 {
+	unsigned char* charfont = drawfont;
 	int x = 10;
 	int y = 10;
 	unsigned int mask = 128; //1000 0000 en binario
@@ -153,7 +160,7 @@ void drawChar(unsigned char *charfont)
 		{
 			int index = (i / 8);
 			if((charfont[index] & mask) == mask)
-				DrawRectangle(x*i, y*j, 10, 10, BLACK);
+				DrawRectangle(posx+x*i, posy+y*j, 10, 10, BLACK);
 			mask = mask >> 1;
 			if (mask == 0) mask = 128;
 		}
@@ -166,7 +173,8 @@ void drawChar(unsigned char *charfont)
 
 int loadFile(const char* filename, file_t *file)
 {
-	
+	//si tenemos un buffer del fichero anterior lo cerramos
+	if (spyBuffer) free(spyBuffer);
 	//Abrimos Fichero
 	file->position = 0;
 	strcpy(file->name, filename);
@@ -181,5 +189,13 @@ int loadFile(const char* filename, file_t *file)
 	fseek(file->fileHandle, 0L, SEEK_END);
 	file->size = ftell(file->fileHandle);
 	rewind(file->fileHandle);
+
+	//Requerimos nuestra memoria
+	spyBuffer = malloc(sizeof(unsigned char) * file->size);
+	fread(spyBuffer, sizeof(char) * file->size, 1, file->fileHandle);
+
+	//Realmente ya no necesitariamos el fichero abierto
+	//y podriamos cerrorlo aqui mismo
+
 	return 0;
 }
