@@ -1,7 +1,6 @@
 #pragma once
 #include <stdio.h>
 
-void drawChar(unsigned char *charfont);
 
 #define UNO 1		//Solo lee un byte de ancho cada font
 #define DOS 2		//lee dos bytes de ancho
@@ -22,3 +21,6 @@ typedef struct
 
 fontattr_t font;
 unsigned char *spyBuffer;
+
+void loadFile(const char* filename, file_t *file);
+void drawChar(unsigned char *charfont);

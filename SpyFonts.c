@@ -26,24 +26,9 @@ int main(void)
 	int nextscansize = (font.w * font.h);
 	spyBuffer = malloc(sizeof(unsigned char) * spybuffersize);
 
-
-	//ESTO A OTRA FUNCION YA!
-	//Abrimos Fichero
-	file_t file = { .fileHandle = NULL, .name ='\0', .position = 0, .size = 0};
-	//strcpy(file->name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/waxworksfont.raw");
-	strcpy(file.name, "C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw");
-	file.fileHandle = fopen(file.name, "rb");
-	if (!file.fileHandle)
-	{
-		if(spyBuffer) free(spyBuffer);
-		//if (file) free(file);
-		CloseWindow();
-		return - 1;
-	}
-	fseek(file.fileHandle, 0L, SEEK_END);
-	file.size = ftell(file.fileHandle);
-	rewind(file.fileHandle);
-	fread(spyBuffer, sizeof(char)*spybuffersize, 1, file.fileHandle);
+	file_t file;
+	loadFile("C:/Users/Tolkien/source/repos/Pruebas/RayGuiFonts/x64/Debug/font3.raw", &file);
+	fread(spyBuffer, sizeof(char) * spybuffersize, 1, file.fileHandle);
 
 
 	// layout_name: controls initialization
@@ -54,12 +39,15 @@ int main(void)
 	bool AltoEditMode = false;
 	int AltoValue = font.h;
 	bool FileEditMode = false;
+	bool GetText = false;
 	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
 	sprintf(positionbuffer, "0x%x", 0);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
 	SetTargetFPS(60);
+
+
 	//--------------------------------------------------------------------------------------
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -84,6 +72,12 @@ int main(void)
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		
+		if (GetText)
+		{
+			printf("Edit file %s\n", file.name);
+			GetText = false;
+		}
+
 
 		// Draw
 		//----------------------------------------------------------------------------------
@@ -105,7 +99,11 @@ int main(void)
 			GuiToggleGroup((Rectangle) { 460, 86, 60, 25 }, "8;16", &AnchoValue);			
 
 			if (GuiSpinner((Rectangle) { 461, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
-			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file.name, 127, FileEditMode)) FileEditMode = !FileEditMode;
+			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file.name, 127, FileEditMode))
+			{
+				GetText = true;
+				FileEditMode = !FileEditMode;
+			}
 			GuiDrawText("Position: ", (Rectangle) { 410, 180, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { 460, 180, 80, 10 }, 0, BLACK);
 	
@@ -154,3 +152,22 @@ void drawChar(unsigned char *charfont)
 
 }
 
+void loadFile(const char* filename, file_t *file)
+{
+	
+	//Abrimos Fichero
+	file->position = 0;
+	strcpy(file->name, filename);
+	file->fileHandle = fopen(file->name, "rb");
+	if (!file->fileHandle)
+	{
+		printf("Couldnt open file: %s\n", file->name);
+		if (spyBuffer) free(spyBuffer);
+		CloseWindow();
+		return -1;
+	}
+	fseek(file->fileHandle, 0L, SEEK_END);
+	file->size = ftell(file->fileHandle);
+	rewind(file->fileHandle);
+	
+}
