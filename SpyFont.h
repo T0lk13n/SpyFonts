@@ -22,5 +22,5 @@ typedef struct
 fontattr_t font;
 unsigned char *spyBuffer;
 
-void loadFile(const char* filename, file_t *file);
+int loadFile(const char* filename, file_t *file);
 void drawChar(unsigned char *charfont);

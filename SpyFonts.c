@@ -160,7 +160,7 @@ void drawChar(unsigned char *charfont)
 
 }
 
-void loadFile(const char* filename, file_t *file)
+int loadFile(const char* filename, file_t *file)
 {
 	
 	//Abrimos Fichero
@@ -177,5 +177,5 @@ void loadFile(const char* filename, file_t *file)
 	fseek(file->fileHandle, 0L, SEEK_END);
 	file->size = ftell(file->fileHandle);
 	rewind(file->fileHandle);
-	
+	return 0;
 }
