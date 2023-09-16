@@ -39,10 +39,12 @@ int main(void)
 	bool AltoEditMode = false;
 	int AltoValue = font.h;
 	bool FileEditMode = false;
-	bool GetText = false;
+	bool GetTextFilename = false;
+	char TextFilename[128];
 	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
 	sprintf(positionbuffer, "0x%x", 0);
+	strcpy(TextFilename, file.name);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
 	SetTargetFPS(60);
@@ -72,10 +74,16 @@ int main(void)
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		
-		if (GetText)
+		if (GetTextFilename)
 		{
-			printf("Edit file %s\n", file.name);
-			GetText = false;
+			if (_stricmp(file.name, TextFilename) != 0)
+			{
+				strcpy(file.name, TextFilename);
+				if (file.fileHandle) fclose(file.fileHandle);		//por si tenemos otro file abierto antes
+				loadFile(file.name, &file);
+				//printf("Edit file %s\n", file.name);
+			}
+			GetTextFilename = false;
 		}
 
 
@@ -99,9 +107,9 @@ int main(void)
 			GuiToggleGroup((Rectangle) { 460, 86, 60, 25 }, "8;16", &AnchoValue);			
 
 			if (GuiSpinner((Rectangle) { 461, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
-			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, file.name, 127, FileEditMode))
+			if (GuiTextBox((Rectangle) { 461, 200, 119, 25 }, TextFilename, 127, FileEditMode))
 			{
-				GetText = true;
+				GetTextFilename = true;
 				FileEditMode = !FileEditMode;
 			}
 			GuiDrawText("Position: ", (Rectangle) { 410, 180, 80, 10 }, 0, BLACK);
