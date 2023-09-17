@@ -201,6 +201,8 @@ int loadFile(const char* filename)
 
 bool checkInput()
 {
+	Vector2 mouseposition;
+
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
 	switch (GetKeyPressed())
@@ -236,6 +238,17 @@ bool checkInput()
 		case KEY_END:
 			file.position = file.size - 8;
 			return true;
+	}
+
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
+		mouseposition = GetMousePosition();
+		int charsperLargo = 800 / (font.w*8 *PIXELSIZE); //50
+		int charsperAlto     = 450 / (font.h*PIXELSIZE); //14 caracteres en lo alto
+		int relativepos = (((int)mouseposition.x * charsperLargo) / 800) + (((int)mouseposition.y * charsperAlto) / 450)*charsperLargo;
+		file.position += relativepos*font.w*8;
+		if (file.position > file.size - 8)
+			file.position = file.size - 8;
 	}
 
 	return false;
