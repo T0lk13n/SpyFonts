@@ -57,51 +57,11 @@ int main(void)
 		font.h = AltoValue;
 		nextscansize = (font.w * font.h);
 
-		if(IsKeyPressed(KEY_F1))
+		//este caso de F1 lo tengo que intentar meter en chackKeyboard
+		if (IsKeyPressed(KEY_F1))
 			MainWindowActive = !MainWindowActive;
-
-
-		// TODO ESTO ES MUY REPETIDO...MEJORAR YA
-		if (IsKeyDown(KEY_LEFT))
-		{
-			file.position-=nextscansize;
-			if (file.position < 0)
-				file.position = 0;
-
+		if (checkKeyboard())
 			sprintf(positionbuffer, "0x%x", file.position);
-		}
-		else if (IsKeyDown(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
-		{
-			file.position+= nextscansize;
-			if (file.position > file.size)
-					file.position = file.size;
-			sprintf(positionbuffer, "0x%x", file.position);
-		}
-		else if (IsKeyDown(KEY_UP))
-		{
-			file.position -= (nextscansize * 20);
-			if (file.position < 0)
-				file.position = 0;
-			sprintf(positionbuffer, "0x%x", file.position);
-		}
-		else if (IsKeyDown(KEY_DOWN))
-		{
-			file.position += (nextscansize*20);
-			if (file.position > file.size-8)
-				file.position = file.size-8;
-			sprintf(positionbuffer, "0x%x", file.position);
-		}
-		else if (IsKeyPressed(KEY_HOME))
-		{
-			file.position = 0;
-			sprintf(positionbuffer, "0x%x", file.position);
-		}
-		else if (IsKeyPressed(KEY_END))
-		{
-			file.position = file.size-8;
-			sprintf(positionbuffer, "0x%x", file.position);
-		}
-
 		
 		if (GetTextFilename)
 		{
@@ -242,4 +202,49 @@ int loadFile(const char* filename)
 	fclose(file.fileHandle);
 
 	return 0;
+}
+
+bool checkKeyboard()
+{
+	// TODO ESTO ES MUY REPETIDO...MEJORAR YA
+	if (IsKeyDown(KEY_LEFT))
+	{
+		file.position -= nextscansize;
+		if (file.position < 0)
+			file.position = 0;
+		return true;
+	}
+	else if (IsKeyDown(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
+	{
+		file.position += nextscansize;
+		if (file.position > file.size)
+			file.position = file.size;
+		return true;
+	}
+	else if (IsKeyDown(KEY_UP))
+	{
+		file.position -= (nextscansize * 20);
+		if (file.position < 0)
+			file.position = 0;
+		return true;
+	}
+	else if (IsKeyDown(KEY_DOWN))
+	{
+		file.position += (nextscansize * 20);
+		if (file.position > file.size - 8)
+			file.position = file.size - 8;
+		return true;
+	}
+	else if (IsKeyPressed(KEY_HOME))
+	{
+		file.position = 0;
+		return true;
+	}
+	else if (IsKeyPressed(KEY_END))
+	{
+		file.position = file.size - 8;
+		return true;
+		
+	}
+	return false;
 }
