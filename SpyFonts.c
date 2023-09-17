@@ -58,7 +58,11 @@ int main(void)
 		if (IsKeyPressed(KEY_F1))
 			MainWindowActive = !MainWindowActive;
 		if (checkInput())
+		{
 			sprintf(positionbuffer, "0x%x", file.position);
+			sprintf(TextFilename, "%s", file.name);
+
+		}
 		
 
 
@@ -175,29 +179,15 @@ int loadFile(const char* filename)
 	//Abrimos Fichero
 	file.position = 0;
 	strcpy(file.name, filename);
-	file.fileHandle = fopen(file.name, "rb");
-	if (!file.fileHandle)
-	{
-		printf("Couldnt open file: %s\n", file.name);
-		if (spyBuffer) free(spyBuffer);
-		CloseWindow();
-		return -1;
-	}
-	//Get size for buffer
-	fseek(file.fileHandle, 0L, SEEK_END);
-	file.size = ftell(file.fileHandle);
-	rewind(file.fileHandle);
+
+	file.size = GetFileLength(file.name);
 
 	//Requerimos nuestra memoria
 	spyBuffer = malloc(sizeof(unsigned char) * file.size);
 	if (!spyBuffer)
 		puts("Cant allocate spyBuffer");
 	else
-		fread(spyBuffer, sizeof(char) * file.size, 1, file.fileHandle);
-
-	//Realmente ya no necesitariamos el fichero abierto
-	//y podriamos cerrarlo aqui mismo
-	fclose(file.fileHandle);
+		spyBuffer = LoadFileData(file.name, &file.size);
 
 	return 0;
 }
@@ -218,8 +208,8 @@ bool checkInput()
 
 		case KEY_RIGHT:
 			file.position += nextscansize;
-			if (file.position > file.size)
-				file.position = file.size;
+			if (file.position > file.size-8)
+				file.position = file.size-8;
 			return true;
 
 		case KEY_UP:
@@ -243,7 +233,7 @@ bool checkInput()
 			return true;
 	}
 
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 	{
 		mouseposition = GetMousePosition();
 		int charsperLargo = 800 / (font.w*8 *PIXELSIZE); //50
@@ -258,8 +248,9 @@ bool checkInput()
 	{
 		FilePathList dropedFiles = LoadDroppedFiles();
 		loadFile(dropedFiles.paths[0]);
-		printf("Dropped file: %s\n", dropedFiles.paths[0]);
+		//Actializar el nombre en la caja del GUI (TextFilename) al salir
 		UnloadDroppedFiles(dropedFiles);
+		return true;
 	}
 
 	return false;
