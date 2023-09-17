@@ -21,9 +21,10 @@ typedef struct
 }file_t;
 
 fontattr_t font;
+file_t file;
 unsigned char *spyBuffer = NULL;
 int nextscansize = 0;
 
-int loadFile(const char* filename, file_t *file);
+int loadFile(const char* filename);
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);

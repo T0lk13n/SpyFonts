@@ -24,8 +24,7 @@ int main(void)
 	
 	nextscansize = (font.w * font.h);
 
-	file_t file;
-	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw", &file);
+	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw");
 	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
 
 
@@ -108,7 +107,7 @@ int main(void)
 		{
 			if (_stricmp(file.name, TextFilename) != 0)
 			{
-				loadFile(TextFilename, &file);
+				loadFile(TextFilename);
 				sprintf(positionbuffer, "0x%x", file.position);
 			}
 
@@ -210,37 +209,37 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 	}
 }
 
-int loadFile(const char* filename, file_t *file)
+int loadFile(const char* filename)
 {
 	//si tenemos un buffer del fichero anterior lo cerramos
 	if (spyBuffer) free(spyBuffer);
 
 	//Abrimos Fichero
-	file->position = 0;
-	strcpy(file->name, filename);
-	file->fileHandle = fopen(file->name, "rb");
-	if (!file->fileHandle)
+	file.position = 0;
+	strcpy(file.name, filename);
+	file.fileHandle = fopen(file.name, "rb");
+	if (!file.fileHandle)
 	{
-		printf("Couldnt open file: %s\n", file->name);
+		printf("Couldnt open file: %s\n", file.name);
 		if (spyBuffer) free(spyBuffer);
 		CloseWindow();
 		return -1;
 	}
 	//Get size for buffer
-	fseek(file->fileHandle, 0L, SEEK_END);
-	file->size = ftell(file->fileHandle);
-	rewind(file->fileHandle);
+	fseek(file.fileHandle, 0L, SEEK_END);
+	file.size = ftell(file.fileHandle);
+	rewind(file.fileHandle);
 
 	//Requerimos nuestra memoria
-	spyBuffer = malloc(sizeof(unsigned char) * file->size);
+	spyBuffer = malloc(sizeof(unsigned char) * file.size);
 	if (!spyBuffer)
 		puts("Cant allocate spyBuffer");
 	else
-		fread(spyBuffer, sizeof(char) * file->size, 1, file->fileHandle);
+		fread(spyBuffer, sizeof(char) * file.size, 1, file.fileHandle);
 
 	//Realmente ya no necesitariamos el fichero abierto
 	//y podriamos cerrarlo aqui mismo
-	fclose(file->fileHandle);
+	fclose(file.fileHandle);
 
 	return 0;
 }
