@@ -9,6 +9,9 @@
 #include "SpyFont.h"
 
 
+//dejar de usar las funciones de ficheros de C y usar las de Raylib
+
+
 int main(void)
 {
 	SetTraceLogLevel(LOG_NONE);
@@ -249,6 +252,14 @@ bool checkInput()
 		file.position += relativepos*font.w*8;
 		if (file.position > file.size - 8)
 			file.position = file.size - 8;
+	}
+
+	if (IsFileDropped())
+	{
+		FilePathList dropedFiles = LoadDroppedFiles();
+		loadFile(dropedFiles.paths[0]);
+		printf("Dropped file: %s\n", dropedFiles.paths[0]);
+		UnloadDroppedFiles(dropedFiles);
 	}
 
 	return false;
