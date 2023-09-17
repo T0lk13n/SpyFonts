@@ -242,6 +242,7 @@ bool checkInput()
 		file.position += relativepos*font.w*8;
 		if (file.position > file.size - 8)
 			file.position = file.size - 8;
+		return true;
 	}
 
 	if (IsFileDropped())
