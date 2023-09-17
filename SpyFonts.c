@@ -121,19 +121,19 @@ int main(void)
 void drawMap(int position, int size)
 {
 	//los 5 son el tamaño de los pixeles hechos en drawchar con DrawRectangule
-	int nextchar = font.w * font.h;
-	int spaceX = 8 * PIXELSIZE;
+	int fontSize = font.w * font.h;
+	int spaceX = font.w * 8 * PIXELSIZE;
 	int spaceY = font.h * PIXELSIZE;
-	int maxfonts = (size / font.h);
+	int maxfonts = (size / fontSize);
 
 	for (int y = 0; y < (450/spaceY); y++)
 	{
 		for (int x = 0; x < (800/spaceX); x++)			//800 = screenWidht hardcodeado
 		{
 			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
-			position += nextchar;
+			position += fontSize;
 
-			if ((position/font.h) >= maxfonts) return;
+			if ((position/fontSize) >= maxfonts) return;   //???????????????
 		}
 	}
 }
