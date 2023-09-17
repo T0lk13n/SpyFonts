@@ -92,6 +92,17 @@ int main(void)
 				file.position = file.size-8;
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
+		else if (IsKeyPressed(KEY_HOME))
+		{
+			file.position = 0;
+			sprintf(positionbuffer, "0x%x", file.position);
+		}
+		else if (IsKeyPressed(KEY_END))
+		{
+			file.position = file.size-8;
+			sprintf(positionbuffer, "0x%x", file.position);
+		}
+
 		
 		if (GetTextFilename)
 		{
