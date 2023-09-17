@@ -201,45 +201,42 @@ int loadFile(const char* filename)
 
 bool checkInput()
 {
-	// TODO ESTO ES MUY REPETIDO...MEJORAR YA
-	// se deberia llamar a una funcion update state o algo asi...esta guarro
-	if (IsKeyDown(KEY_LEFT))
+	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
+	//// se deberia llamar a una funcion update state o algo asi...esta guarro
+	switch (GetKeyPressed())
 	{
-		file.position -= nextscansize;
-		if (file.position < 0)
+		case KEY_LEFT:
+			file.position -= nextscansize;
+			if (file.position < 0)
+				file.position = 0;
+			return true;
+
+		case KEY_RIGHT:
+			file.position += nextscansize;
+			if (file.position > file.size)
+				file.position = file.size;
+			return true;
+
+		case KEY_UP:
+			file.position -= (nextscansize * 20);
+			if (file.position < 0)
+				file.position = 0;
+			return true;
+
+		case KEY_DOWN:
+			file.position += (nextscansize * 20);
+			if (file.position > file.size - 8)
+				file.position = file.size - 8;
+			return true;
+
+		case KEY_HOME:
 			file.position = 0;
-		return true;
-	}
-	else if (IsKeyDown(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
-	{
-		file.position += nextscansize;
-		if (file.position > file.size)
-			file.position = file.size;
-		return true;
-	}
-	else if (IsKeyDown(KEY_UP))
-	{
-		file.position -= (nextscansize * 20);
-		if (file.position < 0)
-			file.position = 0;
-		return true;
-	}
-	else if (IsKeyDown(KEY_DOWN))
-	{
-		file.position += (nextscansize * 20);
-		if (file.position > file.size - 8)
+			return true;
+
+		case KEY_END:
 			file.position = file.size - 8;
-		return true;
+			return true;
 	}
-	else if (IsKeyPressed(KEY_HOME))
-	{
-		file.position = 0;
-		return true;
-	}
-	else if (IsKeyPressed(KEY_END))
-	{
-		file.position = file.size - 8;
-		return true;
-	}
+
 	return false;
 }
