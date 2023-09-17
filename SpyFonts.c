@@ -16,12 +16,7 @@ int main(void)
 	// Initialization
 	//--------------------------------------------------------------------------------------
 	font.w = UNO;
-	font.h = 8;
-
-	//El buffersize va a ser de todo el tamaño del fichero.
-	// los ficheros de Amiga son pequeños para la memoria que hay.
-	//la ventana que corresponda a font.w y font.h
-	
+	font.h = 8;	
 	nextscansize = (font.w * font.h);
 
 	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw");
@@ -38,7 +33,6 @@ int main(void)
 	bool AltoEditMode = false;
 	int AltoValue = font.h;
 	bool FileEditMode = false;
-	bool GetTextFilename = false;
 	char TextFilename[128];
 	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
@@ -57,22 +51,12 @@ int main(void)
 		font.h = AltoValue;
 		nextscansize = (font.w * font.h);
 
-		//este caso de F1 lo tengo que intentar meter en chackKeyboard
+		//este caso de F1 lo tengo que intentar meter en checkKeyboard
 		if (IsKeyPressed(KEY_F1))
 			MainWindowActive = !MainWindowActive;
 		if (checkKeyboard())
 			sprintf(positionbuffer, "0x%x", file.position);
 		
-		if (GetTextFilename)
-		{
-			if (_stricmp(file.name, TextFilename) != 0)
-			{
-				loadFile(TextFilename);
-				sprintf(positionbuffer, "0x%x", file.position);
-			}
-
-			GetTextFilename = false;
-		}
 
 
 		// Draw
@@ -99,7 +83,11 @@ int main(void)
 
 			if (GuiTextBox((Rectangle) { 550, 270, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
-				GetTextFilename = true;
+				if (_stricmp(file.name, TextFilename) != 0)
+				{
+					loadFile(TextFilename);
+					sprintf(positionbuffer, "0x%x", file.position);
+				}
 				FileEditMode = !FileEditMode;
 			}
 	
@@ -146,7 +134,6 @@ void drawMap(int position, int size)
 //pinta un rectangulo segun los bits que estan activos
 //si el ancho del font es doble hay que leer una linea de cada
 //char y luego la de abajo etc etc..
-
 void drawChar(unsigned char *drawfont, int posx, int posy)
 {
 	unsigned char* charfont = drawfont;
@@ -169,6 +156,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 	}
 }
 
+//carga fichero y reserva memoria para el buffer
 int loadFile(const char* filename)
 {
 	//si tenemos un buffer del fichero anterior lo cerramos
@@ -207,6 +195,7 @@ int loadFile(const char* filename)
 bool checkKeyboard()
 {
 	// TODO ESTO ES MUY REPETIDO...MEJORAR YA
+	// se deberia llamar a una funcion update state o algo asi...esta guarro
 	if (IsKeyDown(KEY_LEFT))
 	{
 		file.position -= nextscansize;
@@ -244,7 +233,6 @@ bool checkKeyboard()
 	{
 		file.position = file.size - 8;
 		return true;
-		
 	}
 	return false;
 }
