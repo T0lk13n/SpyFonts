@@ -4,6 +4,7 @@
 
 #define UNO 1		//Solo lee un byte de ancho cada font
 #define DOS 2		//lee dos bytes de ancho
+#define PIXELSIZE 2		//tamaño del pixel representado
 
 typedef struct
 {

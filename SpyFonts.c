@@ -157,8 +157,8 @@ void drawMap(int position, int size)
 {
 	//los 5 son el tamaño de los pixeles hechos en drawchar con DrawRectangule
 	int nextchar = font.w * font.h;
-	int spaceX = 8 * 5;
-	int spaceY = font.h * 5;
+	int spaceX = 8 * PIXELSIZE;
+	int spaceY = font.h * PIXELSIZE;
 	int maxfonts = (size / font.h);
 
 	for (int y = 0; y < (450/spaceY); y++)
@@ -180,8 +180,8 @@ void drawMap(int position, int size)
 void drawChar(unsigned char *drawfont, int posx, int posy)
 {
 	unsigned char* charfont = drawfont;
-	int x = 5;
-	int y = 5;
+	//const int x = 5;
+	//const int y = 5;
 	unsigned int mask = 128; //1000 0000 en binario
 
 	for (int j = 0; j < font.h; j++)
@@ -190,7 +190,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 		{
 			int index = (i / 8);
 			if((charfont[index] & mask) == mask)
-				DrawRectangle(posx+(x*i), posy+(y*j), 5, 5, BLACK);
+				DrawRectangle(posx+(PIXELSIZE*i), posy+(PIXELSIZE*j), PIXELSIZE, PIXELSIZE, BLACK);
 			mask = mask >> 1;
 			if (mask == 0) mask = 128;
 		}
