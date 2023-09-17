@@ -161,9 +161,9 @@ void drawMap(int position, int size)
 	int spaceY = font.h * 5;
 	int maxfonts = (size / font.h);
 
-	for (int y = 1; y < (450/spaceY); y++)
+	for (int y = 0; y < (450/spaceY); y++)
 	{
-		for (int x = 1; x < (800/spaceX); x++)			//800 = screenWidht hardcodeado
+		for (int x = 0; x < (800/spaceX); x++)			//800 = screenWidht hardcodeado
 		{
 			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
 			position += nextchar;
@@ -184,13 +184,13 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 	int y = 5;
 	unsigned int mask = 128; //1000 0000 en binario
 
-	for (int j = 1; j <= font.h; j++)
+	for (int j = 0; j < font.h; j++)
 	{
 		for (int i = 0; i < font.w*8; i++)
 		{
 			int index = (i / 8);
 			if((charfont[index] & mask) == mask)
-				DrawRectangle(posx+x*i, posy+y*j, 5, 5, BLACK);
+				DrawRectangle(posx+(x*i), posy+(y*j), 5, 5, BLACK);
 			mask = mask >> 1;
 			if (mask == 0) mask = 128;
 		}
