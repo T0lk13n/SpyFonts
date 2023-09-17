@@ -28,4 +28,4 @@ int nextscansize = 0;
 int loadFile(const char* filename);
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);
-bool checkKeyboard();
+bool checkInput();

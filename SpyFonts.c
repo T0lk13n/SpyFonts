@@ -54,7 +54,7 @@ int main(void)
 		//este caso de F1 lo tengo que intentar meter en checkKeyboard
 		if (IsKeyPressed(KEY_F1))
 			MainWindowActive = !MainWindowActive;
-		if (checkKeyboard())
+		if (checkInput())
 			sprintf(positionbuffer, "0x%x", file.position);
 		
 
@@ -80,6 +80,13 @@ int main(void)
 			
 			GuiDrawText("Position: ", (Rectangle) { 550, 180, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { 600, 180, 80, 10 }, 0, BLACK);
+
+			char mx[4] = "";
+			sprintf(mx, "%d", GetMouseX());
+			char my[4] = "";
+			sprintf(my, "%d", GetMouseY());
+			GuiDrawText(mx, (Rectangle) { 550, 220, 80, 10 }, 0, BLACK);
+			GuiDrawText(my, (Rectangle) { 550, 230, 80, 10 }, 0, BLACK);
 
 			if (GuiTextBox((Rectangle) { 550, 270, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
@@ -192,7 +199,7 @@ int loadFile(const char* filename)
 	return 0;
 }
 
-bool checkKeyboard()
+bool checkInput()
 {
 	// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	// se deberia llamar a una funcion update state o algo asi...esta guarro
