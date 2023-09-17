@@ -47,7 +47,7 @@ int main(void)
 	strcpy(TextFilename, file.name);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
-	SetTargetFPS(60);
+	SetTargetFPS(30);
 
 
 	//--------------------------------------------------------------------------------------
@@ -61,7 +61,9 @@ int main(void)
 		if(IsKeyPressed(KEY_F1))
 			MainWindowActive = !MainWindowActive;
 
-		if (IsKeyPressed(KEY_LEFT))
+
+		// TODO ESTO ES MUY REPETIDO...MEJORAR YA
+		if (IsKeyDown(KEY_LEFT))
 		{
 			file.position-=nextscansize;
 			if (file.position < 0)
@@ -69,11 +71,25 @@ int main(void)
 
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
-		else if (IsKeyPressed(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
+		else if (IsKeyDown(KEY_RIGHT) && file.position < ((file.size) - nextscansize))
 		{
+			file.position+= nextscansize;
 			if (file.position > file.size)
 					file.position = file.size;
-			file.position+= nextscansize;
+			sprintf(positionbuffer, "0x%x", file.position);
+		}
+		else if (IsKeyDown(KEY_UP))
+		{
+			file.position -= (nextscansize * 20);
+			if (file.position < 0)
+				file.position = 0;
+			sprintf(positionbuffer, "0x%x", file.position);
+		}
+		else if (IsKeyDown(KEY_DOWN))
+		{
+			file.position += (nextscansize*20);
+			if (file.position > file.size-8)
+				file.position = file.size-8;
 			sprintf(positionbuffer, "0x%x", file.position);
 		}
 		
@@ -81,9 +97,10 @@ int main(void)
 		{
 			if (_stricmp(file.name, TextFilename) != 0)
 			{
-				if (file.fileHandle) fclose(file.fileHandle);		//por si tenemos otro file abierto antes
 				loadFile(TextFilename, &file);
+				sprintf(positionbuffer, "0x%x", file.position);
 			}
+
 			GetTextFilename = false;
 		}
 
@@ -125,7 +142,7 @@ int main(void)
 
 	// De-Initialization
 	if(spyBuffer) free(spyBuffer);
-	if(file.fileHandle) fclose(file.fileHandle);
+
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
@@ -179,9 +196,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 		}
 		charfont = charfont + font.w;
 		//mask = 128;
-
 	}
-
 }
 
 int loadFile(const char* filename, file_t *file)
@@ -200,6 +215,7 @@ int loadFile(const char* filename, file_t *file)
 		CloseWindow();
 		return -1;
 	}
+	//Get size for buffer
 	fseek(file->fileHandle, 0L, SEEK_END);
 	file->size = ftell(file->fileHandle);
 	rewind(file->fileHandle);
@@ -208,10 +224,12 @@ int loadFile(const char* filename, file_t *file)
 	spyBuffer = malloc(sizeof(unsigned char) * file->size);
 	if (!spyBuffer)
 		puts("Cant allocate spyBuffer");
-	fread(spyBuffer, sizeof(char) * file->size, 1, file->fileHandle);
+	else
+		fread(spyBuffer, sizeof(char) * file->size, 1, file->fileHandle);
 
 	//Realmente ya no necesitariamos el fichero abierto
-	//y podriamos cerrorlo aqui mismo
+	//y podriamos cerrarlo aqui mismo
+	fclose(file->fileHandle);
 
 	return 0;
 }
