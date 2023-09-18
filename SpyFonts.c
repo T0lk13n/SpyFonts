@@ -10,6 +10,7 @@
 
 //TODO: 
 //			HACER COPIA DE CARACTERES SELECCIONADOS PARA PODER EDITARLOS FUERA
+//			PIXELSIZE ajustable a lo que queramos
 
 int main(void)
 {
@@ -129,15 +130,18 @@ int main(void)
 //dependiendo de sus caracteristicas
 void drawMap(int position, int size)
 {
+	int currentW = GetScreenWidth();
+	int currentH = GetScreenHeight();
+
 	//los 8 es por que cada byte tiene ocho pixels a pintar
 	int fontSize = font.w * font.h;
 	int spaceX = font.w * 8 * PIXELSIZE;
 	int spaceY = font.h * PIXELSIZE;
 	int maxfonts = (size / fontSize);
 
-	for (int y = 0; y < (screenHeight/spaceY); y++)
+	for (int y = 0; y < (currentH/spaceY); y++)
 	{
-		for (int x = 0; x < (screenWidth/spaceX); x++)			
+		for (int x = 0; x < (currentW/spaceX); x++)			
 		{
 			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
 			position += fontSize;
@@ -236,8 +240,6 @@ bool checkInput()
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 	{
-		
-		
 		file.position += getRelativePos()*font.w*8;
 		if (file.position > file.size - 8)
 			file.position = file.size - 8;
@@ -257,12 +259,14 @@ bool checkInput()
 
 int getRelativePos()
 {
+	int currentW = GetScreenWidth();
+	int currentH = GetScreenHeight();
 	Vector2 mouseposition;
 	mouseposition = GetMousePosition();
-	int charsperLargo = screenWidth / (font.w * 8 * PIXELSIZE); //50
-	int charsperAlto = screenHeight / (font.h * PIXELSIZE); //14 caracteres en lo alto
-	int relX = (((int)mouseposition.x * charsperLargo) / screenWidth);
-	int RelY = (((int)mouseposition.y * charsperAlto) / screenHeight) * charsperLargo;
+	int charsperLargo = currentW / (font.w * 8 * PIXELSIZE); //50
+	int charsperAlto = currentH / (font.h * PIXELSIZE); //14 caracteres en lo alto
+	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
+	int RelY = (((int)mouseposition.y * charsperAlto) / currentH) * charsperLargo;
 	int relativepos = relX + RelY;
 
 	return relativepos;
