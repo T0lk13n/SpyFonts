@@ -6,6 +6,9 @@
 #define DOS 2		//lee dos bytes de ancho
 #define PIXELSIZE 2		//tamaño del pixel representado
 
+const int screenWidth = 800;
+const int screenHeight = 450;
+
 typedef struct
 {
 	int w;		//ancho en bytes

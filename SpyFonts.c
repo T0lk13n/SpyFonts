@@ -25,8 +25,6 @@ int main(void)
 	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
 
 
-	const int screenWidth = 800;
-	const int screenHeight = 450;
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
 	bool MainWindowActive = true;
@@ -42,6 +40,8 @@ int main(void)
 	strcpy(TextFilename, file.name);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
+	SetWindowState(FLAG_WINDOW_RESIZABLE);
+	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
 	SetTargetFPS(30);
 
 
@@ -77,24 +77,27 @@ int main(void)
 		//----------------------------------------------------------------------------------
 		if (MainWindowActive)
 		{
-			MainWindowActive = !GuiWindowBox((Rectangle) { 542, 26, 201, 272 }, "Amiga SpyFonts - F1 toggle window");
-			
-			GuiGroupBox((Rectangle) { 547, 69, 190, 99 }, "Font size");
-			GuiDrawText("Width", (Rectangle) { 570, 95, 80, 10 }, 0, BLACK);
-			GuiToggleGroup((Rectangle) { 600, 86, 60, 25 }, "8;16", &AnchoValue);			
-			if (GuiSpinner((Rectangle) { 600, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
-			
-			GuiDrawText("Position: ", (Rectangle) { 550, 180, 80, 10 }, 0, BLACK);
-			GuiDrawText(positionbuffer, (Rectangle) { 600, 180, 80, 10 }, 0, BLACK);
+			int currentW = GetScreenWidth();
+			int currentH = GetScreenHeight();
 
-			char mx[4] = "";
+			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, 26, 200, 272 }, "Amiga SpyFonts - F1 toggle window");
+			
+			GuiGroupBox((Rectangle) { currentW-195, 69, 190, 99 }, "Font size");
+			GuiDrawText("Width", (Rectangle) { currentW-180, 95, 80, 10 }, 0, BLACK);
+			GuiToggleGroup((Rectangle) { currentW-140, 86, 60, 25 }, "8;16", &AnchoValue);			
+			if (GuiSpinner((Rectangle) { currentW-150, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			
+			GuiDrawText("Position: ", (Rectangle) { currentW-190, 180, 80, 10 }, 0, BLACK);
+			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, 180, 80, 10 }, 0, BLACK);
+
+			char mx[6] = "";
 			sprintf(mx, "%d", GetMouseX());
-			char my[4] = "";
+			char my[6] = "";
 			sprintf(my, "%d", GetMouseY());
-			GuiDrawText(mx, (Rectangle) { 550, 220, 80, 10 }, 0, BLACK);
-			GuiDrawText(my, (Rectangle) { 550, 230, 80, 10 }, 0, BLACK);
+			GuiDrawText(mx, (Rectangle) { currentW -190, 220, 80, 10 }, 0, BLACK);
+			GuiDrawText(my, (Rectangle) { currentW-190, 230, 80, 10 }, 0, BLACK);
 
-			if (GuiTextBox((Rectangle) { 550, 270, 185, 25 }, TextFilename, 127, FileEditMode))
+			if (GuiTextBox((Rectangle) { currentW-190, 270, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
 				if (_stricmp(file.name, TextFilename) != 0)
 				{
@@ -126,20 +129,20 @@ int main(void)
 //dependiendo de sus caracteristicas
 void drawMap(int position, int size)
 {
-	//los 5 son el tamaño de los pixeles hechos en drawchar con DrawRectangule
+	//los 8 es por que cada byte tiene ocho pixels a pintar
 	int fontSize = font.w * font.h;
 	int spaceX = font.w * 8 * PIXELSIZE;
 	int spaceY = font.h * PIXELSIZE;
 	int maxfonts = (size / fontSize);
 
-	for (int y = 0; y < (450/spaceY); y++)
+	for (int y = 0; y < (screenHeight/spaceY); y++)
 	{
-		for (int x = 0; x < (800/spaceX); x++)			//800 = screenWidht hardcodeado
+		for (int x = 0; x < (screenWidth/spaceX); x++)			
 		{
 			drawChar(&spyBuffer[position], x*spaceX, y*spaceY);
 			position += fontSize;
 
-			if ((position/fontSize) >= maxfonts) return;   //???????????????
+			if ((position/fontSize) >= maxfonts) return;  
 		}
 	}
 }
@@ -150,8 +153,7 @@ void drawMap(int position, int size)
 void drawChar(unsigned char *drawfont, int posx, int posy)
 {
 	unsigned char* charfont = drawfont;
-	//const int x = 5;
-	//const int y = 5;
+
 	unsigned int mask = 128; //1000 0000 en binario
 
 	for (int j = 0; j < font.h; j++)
@@ -257,10 +259,10 @@ int getRelativePos()
 {
 	Vector2 mouseposition;
 	mouseposition = GetMousePosition();
-	int charsperLargo = 800 / (font.w * 8 * PIXELSIZE); //50
-	int charsperAlto = 450 / (font.h * PIXELSIZE); //14 caracteres en lo alto
-	int relX = (((int)mouseposition.x * charsperLargo) / 800);
-	int RelY = (((int)mouseposition.y * charsperAlto) / 450) * charsperLargo;
+	int charsperLargo = screenWidth / (font.w * 8 * PIXELSIZE); //50
+	int charsperAlto = screenHeight / (font.h * PIXELSIZE); //14 caracteres en lo alto
+	int relX = (((int)mouseposition.x * charsperLargo) / screenWidth);
+	int RelY = (((int)mouseposition.y * charsperAlto) / screenHeight) * charsperLargo;
 	int relativepos = relX + RelY;
 
 	return relativepos;
