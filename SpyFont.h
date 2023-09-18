@@ -4,10 +4,11 @@
 
 #define UNO 1		//Solo lee un byte de ancho cada font
 #define DOS 2		//lee dos bytes de ancho
-#define PIXELSIZE 2		//tamaño del pixel representado
+//define PIXELSIZE 2		//tamaño del pixel representado
 
-const int screenWidth = 800;
-const int screenHeight = 450;
+int pixelSize = 2;
+const int screenWidth = 1000;
+const int screenHeight = 600;
 
 typedef struct
 {

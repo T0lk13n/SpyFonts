@@ -135,8 +135,8 @@ void drawMap(int position, int size)
 
 	//los 8 es por que cada byte tiene ocho pixels a pintar
 	int fontSize = font.w * font.h;
-	int spaceX = font.w * 8 * PIXELSIZE;
-	int spaceY = font.h * PIXELSIZE;
+	int spaceX = font.w * 8 * pixelSize;
+	int spaceY = font.h * pixelSize;
 	int maxfonts = (size / fontSize);
 
 	for (int y = 0; y < (currentH/spaceY); y++)
@@ -166,7 +166,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 		{
 			int index = (i / 8);
 			if((charfont[index] & mask) == mask)
-				DrawRectangle(posx+(PIXELSIZE*i), posy+(PIXELSIZE*j), PIXELSIZE, PIXELSIZE, BLACK);
+				DrawRectangle(posx+(pixelSize*i), posy+(pixelSize*j), pixelSize, pixelSize, BLACK);
 			mask = mask >> 1;
 			if (mask == 0) mask = 128;
 		}
@@ -236,6 +236,18 @@ bool checkInput()
 		case KEY_END:
 			file.position = file.size - 8;
 			return true;
+
+		case KEY_Z:
+			pixelSize--;
+			if (pixelSize < 1)
+				pixelSize = 1;
+			return true;
+
+		case KEY_X:
+			pixelSize++;
+			if (pixelSize > 8)
+				pixelSize = 8;
+			return true;
 	}
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
@@ -263,8 +275,8 @@ int getRelativePos()
 	int currentH = GetScreenHeight();
 	Vector2 mouseposition;
 	mouseposition = GetMousePosition();
-	int charsperLargo = currentW / (font.w * 8 * PIXELSIZE); //50
-	int charsperAlto = currentH / (font.h * PIXELSIZE); //14 caracteres en lo alto
+	int charsperLargo = currentW / (font.w * 8 * pixelSize); //50
+	int charsperAlto = currentH / (font.h * pixelSize); //14 caracteres en lo alto
 	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
 	int RelY = (((int)mouseposition.y * charsperAlto) / currentH) * charsperLargo;
 	int relativepos = relX + RelY;
