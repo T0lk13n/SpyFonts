@@ -29,3 +29,4 @@ int loadFile(const char* filename);
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);
 bool checkInput();
+int getRelativePos();
