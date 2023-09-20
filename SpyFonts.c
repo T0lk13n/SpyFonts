@@ -37,7 +37,8 @@ int main(void)
 	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
 	sprintf(positionbuffer, "0x%x", 0);
-	strcpy(TextFilename, file.name);
+	//strcpy(TextFilename, file.name);
+	TextCopy(TextFilename, file.name);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -183,7 +184,8 @@ int loadFile(const char* filename)
 
 	//Abrimos Fichero
 	file.position = 0;
-	strcpy(file.name, filename);
+	//strcpy(file.name, filename);
+	TextCopy(file.name, filename);
 
 	file.size = GetFileLength(file.name);
 
