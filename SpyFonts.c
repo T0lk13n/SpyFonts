@@ -101,7 +101,8 @@ int main(void)
 
 			if (GuiTextBox((Rectangle) { currentW-190, 270, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
-				if (_stricmp(file.name, TextFilename) != 0)
+				//if (_stricmp(file.name, TextFilename) != 0)
+				if(!TextIsEqual(file.name, TextFilename))
 				{
 					loadFile(TextFilename);
 					sprintf(positionbuffer, "0x%x", file.position);
