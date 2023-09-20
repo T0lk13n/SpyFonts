@@ -10,7 +10,6 @@
 
 //TODO: 
 //			HACER COPIA DE CARACTERES SELECCIONADOS PARA PODER EDITARLOS FUERA
-//			PIXELSIZE ajustable a lo que queramos
 
 int main(void)
 {
@@ -78,8 +77,9 @@ int main(void)
 		//----------------------------------------------------------------------------------
 		if (MainWindowActive)
 		{
-			int currentW = GetScreenWidth();
-			int currentH = GetScreenHeight();
+			
+			float currentW = (float)GetScreenWidth();
+			float currentH = (float)GetScreenHeight();
 
 			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, 26, 200, 272 }, "Amiga SpyFonts - F1 toggle window");
 			
@@ -253,8 +253,8 @@ bool checkInput()
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 	{
 		file.position += getRelativePos()*font.w*8;
-		if (file.position > file.size - 8)
-			file.position = file.size - 8;
+		if (file.position > file.size -8)
+			file.position = file.size -8;
 		return true;
 	}
 
@@ -275,8 +275,8 @@ int getRelativePos()
 	int currentH = GetScreenHeight();
 	Vector2 mouseposition;
 	mouseposition = GetMousePosition();
-	int charsperLargo = currentW / (font.w * 8 * pixelSize); //50
-	int charsperAlto = currentH / (font.h * pixelSize); //14 caracteres en lo alto
+	int charsperLargo = currentW / (font.w * 8 * pixelSize);
+	int charsperAlto = currentH / (font.h * pixelSize); 
 	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
 	int RelY = (((int)mouseposition.y * charsperAlto) / currentH) * charsperLargo;
 	int relativepos = relX + RelY;
