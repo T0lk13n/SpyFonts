@@ -131,6 +131,7 @@
       <AdditionalIncludeDirectories>C:\raylib\raylib\src</AdditionalIncludeDirectories>
       <CompileAs>Default</CompileAs>
       <PreprocessorDefinitions>PLATFORM_DESKTOP;GRAPHICS_API_OPENGL_21;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

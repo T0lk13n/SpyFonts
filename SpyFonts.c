@@ -120,6 +120,7 @@ int main(void)
 			GuiDrawText("Lshift + Lmouse - go to that char", (Rectangle) { currentW - 390, currentH - 170, 180, 10 }, 0, BLACK);
 			GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
 			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 150, 180, 10 }, 0, BLACK);
+			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 140, 180, 10 }, 0, BLACK);
 		}
 		//----------------------------------------------------------------------------------
 
