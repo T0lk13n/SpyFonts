@@ -7,7 +7,7 @@
 //define PIXELSIZE 2		//tamaño del pixel representado
 
 int pixelSize = 2;
-const int screenWidth = 1000;
+const int screenWidth = 1024;
 const int screenHeight = 600;
 
 typedef struct
