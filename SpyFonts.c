@@ -202,8 +202,12 @@ int loadFile(const char* filename)
 
 bool checkInput()
 {
+	static bool upScroll   = false;
+	static bool downScroll = false;
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
+	// hacer que el scroll vertical avance todo el rato hasta que se suelte la tecla
+
 	switch (GetKeyPressed())
 	{
 		case KEY_LEFT:
@@ -219,16 +223,14 @@ bool checkInput()
 			return true;
 
 		case KEY_UP:
-			file.position -= (nextscansize * 40);
-			if (file.position < 0)
-				file.position = 0;
-			return true;
+			upScroll = true;
+			downScroll = false;
+			break;
 
 		case KEY_DOWN:
-			file.position += (nextscansize * 40);
-			if (file.position > file.size - 8)
-				file.position = file.size - 8;
-			return true;
+			upScroll = false;
+			downScroll = true;
+			break;
 
 		case KEY_HOME:
 			file.position = 0;
@@ -250,6 +252,34 @@ bool checkInput()
 				pixelSize = 8;
 			return true;
 	}
+
+	if(IsKeyReleased(KEY_UP))
+	{
+		upScroll = false;
+		downScroll = false;
+		
+	}
+	else if (IsKeyReleased(KEY_DOWN))
+	{
+		upScroll = false;
+		downScroll = false;
+	}
+
+	if (upScroll)
+	{
+		file.position -= (nextscansize * 40);
+		if (file.position < 0)
+			file.position = 0;
+		return true;
+	}
+	else if (downScroll)
+	{
+		file.position += (nextscansize * 40);
+		if (file.position > file.size - 8)
+			file.position = file.size - 8;
+		return true;
+	}
+
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 	{
