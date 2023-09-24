@@ -27,7 +27,7 @@ int main(void)
 
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
-	bool MainWindowActive = true;
+
 	//bool AnchoEditMode = false;
 	int AnchoValue = font.w-1;
 	bool AltoEditMode = false;
@@ -54,9 +54,6 @@ int main(void)
 		font.h = AltoValue;
 		nextscansize = (font.w * font.h);
 
-		//este caso de F1 lo tengo que intentar meter en checkKeyboard
-		if (IsKeyPressed(KEY_F1))
-			MainWindowActive = !MainWindowActive;
 		if (checkInput())
 		{
 			sprintf(positionbuffer, "0x%x", file.position);
@@ -76,16 +73,14 @@ int main(void)
 		
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
+		float currentW = (float)GetScreenWidth();
+		float currentH = (float)GetScreenHeight();
 		if (MainWindowActive)
 		{
-			
-			float currentW = (float)GetScreenWidth();
-			float currentH = (float)GetScreenHeight();
-
 			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, currentH-275, 200, 272 }, "F1 toggle window");
 			
 			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
-			GuiDrawText("Width", (Rectangle) { currentW-170, currentH-220, 80, 10 }, 0, BLACK);
+			
 			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);			
 			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			
@@ -110,6 +105,21 @@ int main(void)
 				FileEditMode = !FileEditMode;
 			}
 	
+		}
+		if (HelpWindowActive)
+		{
+			HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
+			GuiDrawText("F1  - toggle main window", (Rectangle) { currentW - 390, currentH - 250, 180, 10 }, 0, BLACK);
+			GuiDrawText("F2 - toggle help window", (Rectangle) { currentW - 390, currentH - 240, 180, 10 }, 0, BLACK);
+			GuiDrawText("Left Cursor - 1 char less", (Rectangle) { currentW - 390, currentH - 230, 180, 10 }, 0, BLACK);
+			GuiDrawText("Right Cursor - 1 char more", (Rectangle) { currentW - 390, currentH - 220, 180, 10 }, 0, BLACK);
+			GuiDrawText("Up Cursor - less lot chars", (Rectangle) { currentW - 390, currentH - 210, 180, 10 }, 0, BLACK);
+			GuiDrawText("Down Cursor - more lot chars", (Rectangle) { currentW - 390, currentH - 200, 180, 10 }, 0, BLACK);
+			GuiDrawText("Home key - go to start", (Rectangle) { currentW - 390, currentH - 190, 180, 10 }, 0, BLACK);
+			GuiDrawText("End key - go to finish", (Rectangle) { currentW - 390, currentH - 180, 180, 10 }, 0, BLACK);
+			GuiDrawText("Lshift + Lmouse - go to that char", (Rectangle) { currentW - 390, currentH - 170, 180, 10 }, 0, BLACK);
+			GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
+			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 150, 180, 10 }, 0, BLACK);
 		}
 		//----------------------------------------------------------------------------------
 
@@ -206,10 +216,17 @@ bool checkInput()
 	static bool downScroll = false;
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
-	// hacer que el scroll vertical avance todo el rato hasta que se suelte la tecla
 
 	switch (GetKeyPressed())
 	{
+		case KEY_F1:
+			MainWindowActive = !MainWindowActive;
+			return false;
+
+		case KEY_F2:
+			HelpWindowActive = !HelpWindowActive;
+			return false;
+
 		case KEY_LEFT:
 			file.position -= nextscansize;
 			if (file.position < 0)

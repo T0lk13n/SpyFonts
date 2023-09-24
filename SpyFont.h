@@ -10,6 +10,9 @@ int pixelSize = 2;
 const int screenWidth = 1024;
 const int screenHeight = 600;
 
+bool MainWindowActive = true;
+bool HelpWindowActive = true;
+
 typedef struct
 {
 	int w;		//ancho en bytes
