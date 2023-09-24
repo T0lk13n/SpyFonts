@@ -82,24 +82,24 @@ int main(void)
 			float currentW = (float)GetScreenWidth();
 			float currentH = (float)GetScreenHeight();
 
-			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, 26, 200, 272 }, "Amiga SpyFonts - F1 toggle window");
+			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, currentH-275, 200, 272 }, "F1 toggle window");
 			
-			GuiGroupBox((Rectangle) { currentW-195, 69, 190, 99 }, "Font size");
-			GuiDrawText("Width", (Rectangle) { currentW-180, 95, 80, 10 }, 0, BLACK);
-			GuiToggleGroup((Rectangle) { currentW-140, 86, 60, 25 }, "8;16", &AnchoValue);			
-			if (GuiSpinner((Rectangle) { currentW-150, 124, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
+			GuiDrawText("Width", (Rectangle) { currentW-170, currentH-220, 80, 10 }, 0, BLACK);
+			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);			
+			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			
-			GuiDrawText("Position: ", (Rectangle) { currentW-190, 180, 80, 10 }, 0, BLACK);
-			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, 180, 80, 10 }, 0, BLACK);
+			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
+			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, currentH-100, 80, 10 }, 0, BLACK);
 
 			char mx[6] = "";
-			sprintf(mx, "%d", GetMouseX());
+			sprintf(mx, "%d", GetMouseX()/pixelSize);
 			char my[6] = "";
-			sprintf(my, "%d", GetMouseY());
-			GuiDrawText(mx, (Rectangle) { currentW -190, 220, 80, 10 }, 0, BLACK);
-			GuiDrawText(my, (Rectangle) { currentW-190, 230, 80, 10 }, 0, BLACK);
+			sprintf(my, "%d", GetMouseY()/pixelSize);
+			GuiDrawText(mx, (Rectangle) { currentW -190, currentH-80, 80, 10 }, 0, BLACK);
+			GuiDrawText(my, (Rectangle) { currentW-190, currentH-70, 80, 10 }, 0, BLACK);
 
-			if (GuiTextBox((Rectangle) { currentW-190, 270, 185, 25 }, TextFilename, 127, FileEditMode))
+			if (GuiTextBox((Rectangle) { currentW-190, currentH-30, 185, 25 }, TextFilename, 127, FileEditMode))
 			{
 				//if (_stricmp(file.name, TextFilename) != 0)
 				if(!TextIsEqual(file.name, TextFilename))
@@ -202,8 +202,6 @@ int loadFile(const char* filename)
 
 bool checkInput()
 {
-	
-
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
 	switch (GetKeyPressed())
@@ -221,13 +219,13 @@ bool checkInput()
 			return true;
 
 		case KEY_UP:
-			file.position -= (nextscansize * 20);
+			file.position -= (nextscansize * 40);
 			if (file.position < 0)
 				file.position = 0;
 			return true;
 
 		case KEY_DOWN:
-			file.position += (nextscansize * 20);
+			file.position += (nextscansize * 40);
 			if (file.position > file.size - 8)
 				file.position = file.size - 8;
 			return true;
