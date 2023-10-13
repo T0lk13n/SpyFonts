@@ -82,7 +82,7 @@ int main(void)
 			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
 			
 			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);			
-			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 0, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 1, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			
 			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, currentH-100, 80, 10 }, 0, BLACK);
