@@ -198,6 +198,10 @@ int loadFile(const char* filename)
 	file.position = 0;
 	//strcpy(file.name, filename);
 	TextCopy(file.name, filename);
+	char winTitle[100];
+	strcpy(winTitle, "Amiga SpyFonts - ");
+	strcat(winTitle, GetFileName(file.name));
+	SetWindowTitle(winTitle);
 
 	file.size = GetFileLength(file.name);
 
