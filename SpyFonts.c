@@ -352,6 +352,15 @@ void rawEdit()
 	int y = (GetMouseY()  / pixelSize) * pixelSize;
 	DrawRectangle(x, y, pixelSize, pixelSize, RED);
 
+	int bufferPosition = file.position + gfxToBuffer();
+	spyBuffer[bufferPosition] = 0;
+}
+
+
+//devuelve la direccion en el buffer correspondiente a donde tenemos el cursor en pantalla
+int gfxToBuffer()
+{
+
 
 	int currentW = GetScreenWidth();
 	int currentH = GetScreenHeight();
@@ -360,13 +369,16 @@ void rawEdit()
 	int charsperLargo = currentW / (font.w * 8 * pixelSize);
 	int charsperAlto = currentH / (font.h * pixelSize);
 	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
-	int relY = (((int)mouseposition.y * charsperAlto) / currentH) *charsperLargo;
+	int relY = (((int)mouseposition.y * charsperAlto) / currentH) * charsperLargo;
+
+
+	int y = (GetMouseY() / pixelSize);  //% font.h; // *pixelSize;
+	int yAbs = (y / (font.h)) *(charsperLargo * font.h);
 
 	relX *= font.w * font.h;
+	printf("x: %d  y: %d  yAbs: %d\n", relX, y, yAbs);
+	//printf("pos: %d\n", yAbs) ; //" (y / font.h) % font.h);
 
-	//printf("xx: %d\n", relX);
-	printf("pos: %d\n", (y/font.h);
 
-	int bufferPosition = file.position + relX + relY;
-	spyBuffer[bufferPosition] = 0;
+	return relX+yAbs+(y%font.h); // *= font.w * font.h;
 }

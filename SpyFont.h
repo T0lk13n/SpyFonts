@@ -39,3 +39,4 @@ void drawChar(unsigned char *drawfont, int posx, int posy);
 bool checkInput();
 int getRelativePos();
 void rawEdit();
+int gfxToBuffer();
