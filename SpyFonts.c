@@ -9,7 +9,8 @@
 #include "SpyFont.h"
 
 //TODO: 
-//			HACER COPIA DE CARACTERES SELECCIONADOS PARA PODER EDITARLOS FUERA
+//			HACER COPIA DE CARACTERES SELECCIONADOS PARA PODER EDITARLOS FUERA?
+//			REFACTORIZAR ESTE LIO URGENTEMENTE
 
 int main(void)
 {
@@ -360,25 +361,18 @@ void rawEdit()
 //devuelve la direccion en el buffer correspondiente a donde tenemos el cursor en pantalla
 int gfxToBuffer()
 {
-
-
 	int currentW = GetScreenWidth();
-	int currentH = GetScreenHeight();
-	Vector2 mouseposition;
-	mouseposition = GetMousePosition();
-	int charsperLargo = currentW / (font.w * 8 * pixelSize);
-	int charsperAlto = currentH / (font.h * pixelSize);
-	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
-	int relY = (((int)mouseposition.y * charsperAlto) / currentH) * charsperLargo;
 
+	int charsperLargo = currentW / (font.w * 8 * pixelSize);
+	int x = ((GetMouseX() * charsperLargo) / currentW);
+	x *= font.w * font.h;
 
 	int y = (GetMouseY() / pixelSize);  //% font.h; // *pixelSize;
 	int yAbs = (y / (font.h)) *(charsperLargo * font.h);
+	y = y % font.h;
 
-	relX *= font.w * font.h;
-	printf("x: %d  y: %d  yAbs: %d\n", relX, y, yAbs);
-	//printf("pos: %d\n", yAbs) ; //" (y / font.h) % font.h);
+	//printf("x: %d  y: %d  yAbs: %d\n", x, y, yAbs);
 
 
-	return relX+yAbs+(y%font.h); // *= font.w * font.h;
+	return x+yAbs+y; // *= font.w * font.h;
 }
