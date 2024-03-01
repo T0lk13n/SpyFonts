@@ -31,9 +31,11 @@ fontattr_t font;
 file_t file;
 unsigned char *spyBuffer = NULL;
 int nextscansize = 0;
+bool editMode;
 
 int loadFile(const char* filename);
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);
 bool checkInput();
 int getRelativePos();
+void rawEdit();

@@ -20,10 +20,11 @@ int main(void)
 	font.w = UNO;
 	font.h = 8;	
 	nextscansize = (font.w * font.h);
+	editMode = false;
 
-	loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw");
+	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw");
 	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
-
+	loadFile("C:/Users/amiten/Downloads/TRADUCCIONES/SimonTheSorcererAGA/data/runit");
 
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
@@ -122,6 +123,10 @@ int main(void)
 			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 150, 180, 10 }, 0, BLACK);
 			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 140, 180, 10 }, 0, BLACK);
 		}
+		if (editMode)
+			rawEdit();
+			
+
 		//----------------------------------------------------------------------------------
 
 		EndDrawing();
@@ -224,6 +229,10 @@ bool checkInput()
 
 	switch (GetKeyPressed())
 	{
+		case KEY_F3:
+			editMode = !editMode;
+			return false;
+
 		case KEY_F1:
 			MainWindowActive = !MainWindowActive;
 			return false;
@@ -335,4 +344,29 @@ int getRelativePos()
 	int relativepos = relX + RelY;
 
 	return relativepos;
+}
+
+void rawEdit()
+{
+	int x = (GetMouseX() / pixelSize) * (font.w * pixelSize);
+	int y = (GetMouseY()  / pixelSize) * pixelSize;
+	DrawRectangle(x, y, pixelSize, pixelSize, RED);
+
+
+	int currentW = GetScreenWidth();
+	int currentH = GetScreenHeight();
+	Vector2 mouseposition;
+	mouseposition = GetMousePosition();
+	int charsperLargo = currentW / (font.w * 8 * pixelSize);
+	int charsperAlto = currentH / (font.h * pixelSize);
+	int relX = (((int)mouseposition.x * charsperLargo) / currentW);
+	int relY = (((int)mouseposition.y * charsperAlto) / currentH) *charsperLargo;
+
+	relX *= font.w * font.h;
+
+	//printf("xx: %d\n", relX);
+	printf("pos: %d\n", (y/font.h);
+
+	int bufferPosition = file.position + relX + relY;
+	spyBuffer[bufferPosition] = 0;
 }
