@@ -9,8 +9,8 @@
 #include "SpyFont.h"
 
 //TODO: 
-//			HACER COPIA DE CARACTERES SELECCIONADOS PARA PODER EDITARLOS FUERA?
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
+//			CHECK INPUT ES ABERRANTE
 
 int main(void)
 {
@@ -20,6 +20,7 @@ int main(void)
 	//--------------------------------------------------------------------------------------
 	font.w = UNO;
 	font.h = 8;	
+
 	nextscansize = (font.w * font.h);
 	editMode = false;
 
@@ -56,13 +57,14 @@ int main(void)
 		font.h = AltoValue;
 		nextscansize = (font.w * font.h);
 
-		if (checkInput())
+		if (checkInput())		//CHECK INPUT ES ABERRANTE
 		{
 			sprintf(positionbuffer, "0x%x", file.position);
 			sprintf(TextFilename, "%s", file.name);
 
 		}
-		
+		if (editMode)
+			rawEdit();
 
 
 		// Draw
@@ -73,6 +75,8 @@ int main(void)
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
 		drawMap(file.position, file.size);
 		
+
+
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
 		float currentW = (float)GetScreenWidth();
@@ -123,14 +127,14 @@ int main(void)
 			GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
 			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 150, 180, 10 }, 0, BLACK);
 			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 140, 180, 10 }, 0, BLACK);
+			GuiDrawText("Lctrl + s - Save file", (Rectangle) { currentW - 390, currentH - 130, 180, 10 }, 0, BLACK);
+			GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 120, 180, 10 }, 0, BLACK);
 		}
-		if (editMode)
-				rawEdit();
-			
-
+		
 		//----------------------------------------------------------------------------------
 
 		EndDrawing();
+	
 		//----------------------------------------------------------------------------------
 	}
 
@@ -221,6 +225,19 @@ int loadFile(const char* filename)
 	return 0;
 }
 
+
+
+int saveFile()
+{
+
+	return 0;
+}
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 bool checkInput()
 {
 	static bool upScroll   = false;
@@ -354,6 +371,7 @@ int getRelativePos()
 
 /// <summary>
 /// AUN FALLA EN ALGUNA POSICION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+///     PUEDE QUE SEA GFXTOBUFFER QUE NO SIEMPRE DEVUELVE BIEN
 /// </summary>
 void rawEdit()
 {
