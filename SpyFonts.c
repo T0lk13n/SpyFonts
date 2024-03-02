@@ -125,7 +125,7 @@ int main(void)
 			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 140, 180, 10 }, 0, BLACK);
 		}
 		if (editMode)
-			rawEdit();
+				rawEdit();
 			
 
 		//----------------------------------------------------------------------------------
@@ -230,10 +230,6 @@ bool checkInput()
 
 	switch (GetKeyPressed())
 	{
-		case KEY_F3:
-			editMode = !editMode;
-			return false;
-
 		case KEY_F1:
 			MainWindowActive = !MainWindowActive;
 			return false;
@@ -283,7 +279,13 @@ bool checkInput()
 			if (pixelSize > 8)
 				pixelSize = 8;
 			return true;
+	
 	}
+
+	if (IsKeyDown(KEY_LEFT_ALT))
+		editMode = true;
+	else
+		editMode = false;
 
 	if(IsKeyReleased(KEY_UP))
 	{
@@ -347,6 +349,12 @@ int getRelativePos()
 	return relativepos;
 }
 
+
+
+
+/// <summary>
+/// AUN FALLA EN ALGUNA POSICION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/// </summary>
 void rawEdit()
 {
 	int x = (GetMouseX() / pixelSize) * (font.w * pixelSize);
@@ -354,7 +362,12 @@ void rawEdit()
 	DrawRectangle(x, y, pixelSize, pixelSize, RED);
 
 	int bufferPosition = file.position + gfxToBuffer();
-	spyBuffer[bufferPosition] = 0;
+
+	int pixelShift = x / (font.w * pixelSize) % 8;
+	unsigned byte = 0b10000000 >> pixelShift;
+
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		spyBuffer[bufferPosition] ^= byte;
 }
 
 
