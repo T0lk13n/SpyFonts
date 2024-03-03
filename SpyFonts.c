@@ -191,8 +191,6 @@ int loadFile(const char* filename)
 	else
 		spyBuffer = LoadFileData(file.name, &file.size);
 
-	// SetWindowTitle(file.name);
-
 	return 0;
 }
 
@@ -200,7 +198,10 @@ int loadFile(const char* filename)
 
 int saveFile()
 {
+	if(!SaveFileData(file.name, spyBuffer, file.size))
+		printf("No save file");
 
+	//check errors
 	return 0;
 }
 
@@ -311,6 +312,9 @@ void checkInput()
 		loadFile(dropedFiles.paths[0]);
 		UnloadDroppedFiles(dropedFiles);
 	}
+	if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_S))
+		saveFile();
+
 }
 
 
