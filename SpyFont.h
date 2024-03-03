@@ -31,7 +31,7 @@ fontattr_t font;
 file_t file;
 unsigned char *spyBuffer = NULL;
 int nextscansize = 0;
-bool editMode;
+bool editMode = false;
 
 int loadFile(const char* filename);
 int saveFile();

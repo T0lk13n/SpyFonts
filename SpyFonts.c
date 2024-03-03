@@ -16,20 +16,15 @@ int main(void)
 {
 	SetTraceLogLevel(LOG_NONE);
 
-	// Initialization
-	//--------------------------------------------------------------------------------------
-	font.w = UNO;
-	font.h = 8;	
-
-	nextscansize = (font.w * font.h);
-	editMode = false;
-
-	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/WAxWORKSFONT.raw");
-	//loadFile("C:/Users/Tolkien/source/repos/Pruebas/SpyFonts/x64/Debug/font3.raw", &file);
+	//LOAD FILE
 	loadFile("C:/Users/amiten/Downloads/TRADUCCIONES/SimonTheSorcererAGA/data/runit");
 
+	// Initialization
+	//--------------------------------------------------------------------------------------
 	// layout_name: controls initialization
 	//----------------------------------------------------------------------------------
+	font.w = UNO;
+	font.h = 8;	
 
 	//bool AnchoEditMode = false;
 	int AnchoValue = font.w-1;
@@ -37,11 +32,7 @@ int main(void)
 	int AltoValue = font.h;
 	bool FileEditMode = false;
 	char TextFilename[128];
-	//----------------------------------------------------------------------------------
 	char positionbuffer[8];
-	sprintf(positionbuffer, "0x%x", 0);
-	//strcpy(TextFilename, file.name);
-	TextCopy(TextFilename, file.name);
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -53,9 +44,7 @@ int main(void)
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		font.w = AnchoValue + 1;
-		font.h = AltoValue;
-		nextscansize = (font.w * font.h);
+		
 
 		if (checkInput())		//CHECK INPUT ES ABERRANTE
 		{
@@ -63,19 +52,13 @@ int main(void)
 			sprintf(TextFilename, "%s", file.name);
 
 		}
-		if (editMode)
-			rawEdit();
-
 
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
-
-		///ClearBackground(BLACK);
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
-		drawMap(file.position, file.size);
 		
-
+		drawMap(file.position, file.size);
 
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
@@ -83,11 +66,14 @@ int main(void)
 		float currentH = (float)GetScreenHeight();
 		if (MainWindowActive)
 		{
+			font.h = AltoValue;
+			font.w = AnchoValue + 1;
+
 			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, currentH-275, 200, 272 }, "F1 toggle window");
 			
 			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
 			
-			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);			
+			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);
 			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 1, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			
 			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
@@ -242,6 +228,8 @@ bool checkInput()
 {
 	static bool upScroll   = false;
 	static bool downScroll = false;
+	nextscansize = (font.w * font.h);
+
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
 
@@ -300,9 +288,7 @@ bool checkInput()
 	}
 
 	if (IsKeyDown(KEY_LEFT_ALT))
-		editMode = true;
-	else
-		editMode = false;
+		rawEdit();
 
 	if(IsKeyReleased(KEY_UP))
 	{
