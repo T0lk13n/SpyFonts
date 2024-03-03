@@ -11,6 +11,7 @@
 //TODO: 
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
+//			HACER EL SAVE FILE
 
 int main(void)
 {
@@ -31,10 +32,9 @@ int main(void)
 	bool AltoEditMode = false;
 	int AltoValue = font.h;
 	bool FileEditMode = false;
-	char TextFilename[128];
 	char positionbuffer[8];
 
-	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts");
+	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts - tolkien 2024");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
 	SetTargetFPS(30);
@@ -44,15 +44,8 @@ int main(void)
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		checkInput();
 		
-
-		if (checkInput())		//CHECK INPUT ES ABERRANTE
-		{
-			sprintf(positionbuffer, "0x%x", file.position);
-			sprintf(TextFilename, "%s", file.name);
-
-		}
-
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
@@ -68,6 +61,7 @@ int main(void)
 		{
 			font.h = AltoValue;
 			font.w = AnchoValue + 1;
+			sprintf(positionbuffer, "0x%x", file.position);			//QUISIERA QUE SOLO SE ACTUALIZARA AL MOVERNOS EN EL BUFFER pero no es grave
 
 			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, currentH-275, 200, 272 }, "F1 toggle window");
 			
@@ -85,19 +79,8 @@ int main(void)
 			sprintf(my, "%d", GetMouseY()/pixelSize);
 			GuiDrawText(mx, (Rectangle) { currentW -190, currentH-80, 80, 10 }, 0, BLACK);
 			GuiDrawText(my, (Rectangle) { currentW-190, currentH-70, 80, 10 }, 0, BLACK);
-
-			if (GuiTextBox((Rectangle) { currentW-190, currentH-30, 185, 25 }, TextFilename, 127, FileEditMode))
-			{
-				//if (_stricmp(file.name, TextFilename) != 0)
-				if(!TextIsEqual(file.name, TextFilename))
-				{
-					loadFile(TextFilename);
-					sprintf(positionbuffer, "0x%x", file.position);
-				}
-				FileEditMode = !FileEditMode;
-			}
-	
 		}
+
 		if (HelpWindowActive)
 		{
 			HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
@@ -195,7 +178,7 @@ int loadFile(const char* filename)
 	//strcpy(file.name, filename);
 	TextCopy(file.name, filename);
 	char winTitle[100];
-	strcpy(winTitle, "Amiga SpyFonts - ");
+	strcpy(winTitle, "Amiga SpyFonts - tolkien 2024 - ");
 	strcat(winTitle, GetFileName(file.name));
 	SetWindowTitle(winTitle);
 
@@ -207,6 +190,8 @@ int loadFile(const char* filename)
 		puts("Cant allocate spyBuffer");
 	else
 		spyBuffer = LoadFileData(file.name, &file.size);
+
+	// SetWindowTitle(file.name);
 
 	return 0;
 }
@@ -220,11 +205,8 @@ int saveFile()
 }
 
 
-/// <summary>
-/// 
-/// </summary>
-/// <returns></returns>
-bool checkInput()
+/// INPUT 
+void checkInput()
 {
 	static bool upScroll   = false;
 	static bool downScroll = false;
@@ -237,23 +219,23 @@ bool checkInput()
 	{
 		case KEY_F1:
 			MainWindowActive = !MainWindowActive;
-			return false;
+			break;
 
 		case KEY_F2:
 			HelpWindowActive = !HelpWindowActive;
-			return false;
+			break;
 
 		case KEY_LEFT:
 			file.position -= nextscansize;
 			if (file.position < 0)
 				file.position = 0;
-			return true;
+			break;
 
 		case KEY_RIGHT:
 			file.position += nextscansize;
 			if (file.position > file.size-8)
 				file.position = file.size-8;
-			return true;
+			break;
 
 		case KEY_UP:
 			upScroll = true;
@@ -267,23 +249,23 @@ bool checkInput()
 
 		case KEY_HOME:
 			file.position = 0;
-			return true;
+			break;
 
 		case KEY_END:
 			file.position = file.size - 8;
-			return true;
+			break;
 
 		case KEY_Z:
 			pixelSize--;
 			if (pixelSize < 1)
 				pixelSize = 1;
-			return true;
+			break;
 
 		case KEY_X:
 			pixelSize++;
 			if (pixelSize > 8)
 				pixelSize = 8;
-			return true;
+			break;
 	
 	}
 
@@ -302,28 +284,25 @@ bool checkInput()
 		downScroll = false;
 	}
 
+	//Esto debe de estar aqui?
 	if (upScroll)
 	{
 		file.position -= (nextscansize * 40);
 		if (file.position < 0)
 			file.position = 0;
-		return true;
 	}
 	else if (downScroll)
 	{
 		file.position += (nextscansize * 40);
 		if (file.position > file.size - 8)
 			file.position = file.size - 8;
-		return true;
 	}
-
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 	{
 		file.position += getRelativePos()*font.w*8;
 		if (file.position > file.size -8)
 			file.position = file.size -8;
-		return true;
 	}
 
 	if (IsFileDropped())
@@ -331,11 +310,12 @@ bool checkInput()
 		FilePathList dropedFiles = LoadDroppedFiles();
 		loadFile(dropedFiles.paths[0]);
 		UnloadDroppedFiles(dropedFiles);
-		return true;
 	}
-
-	return false;
 }
+
+
+
+
 
 int getRelativePos()
 {
@@ -389,7 +369,6 @@ int gfxToBuffer()
 	y = y % font.h;
 
 	//printf("x: %d  y: %d  yAbs: %d\n", x, y, yAbs);
-
 
 	return x+yAbs+y; // *= font.w * font.h;
 }

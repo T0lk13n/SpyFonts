@@ -37,7 +37,7 @@ int loadFile(const char* filename);
 int saveFile();
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);
-bool checkInput();
+void checkInput();
 int getRelativePos();
 void rawEdit();
 int gfxToBuffer();
