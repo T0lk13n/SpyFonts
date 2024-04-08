@@ -8,18 +8,22 @@
 
 #include "SpyFont.h"
 
+//DONE:
+//			NO CARGAR PROYECTO POR DEFECTO
+//			QUITAR CONSOLE EN RELEASE
+
+
+
 //TODO: 
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
 //			HACER EL SAVE FILE (half done)
-//			QUITAR CONSOLE EN RELEASE
 //			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
 //			AUMENTAR TAMAÑO DEL FONT
-//			NO CARGAR PROYECTO POR DEFECTO
 
 
 
-int main(void)
+int WinMain(void)
 {
 	SetTraceLogLevel(LOG_NONE);
 
