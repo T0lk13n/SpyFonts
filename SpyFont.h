@@ -32,8 +32,10 @@ file_t file;
 unsigned char *spyBuffer = NULL;
 int nextscansize = 0;
 bool editMode = false;
+bool fileLoaded = false;
 
-int loadFile(const char* filename);
+
+bool loadFile(const char* filename);
 int saveFile();
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);

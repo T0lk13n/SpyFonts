@@ -11,14 +11,17 @@
 //TODO: 
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
-//			HACER EL SAVE FILE
+//			HACER EL SAVE FILE (half done)
+//			QUITAR CONSOLE EN RELEASE
+//			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
+//			AUMENTAR TAMAÑO DEL FONT
+//			NO CARGAR PROYECTO POR DEFECTO
+
+
 
 int main(void)
 {
 	SetTraceLogLevel(LOG_NONE);
-
-	//LOAD FILE
-	loadFile("C:/Users/amiten/Downloads/TRADUCCIONES/SimonTheSorcererAGA/data/runit");
 
 	// Initialization
 	//--------------------------------------------------------------------------------------
@@ -39,7 +42,6 @@ int main(void)
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
 	SetTargetFPS(30);
 
-
 	//--------------------------------------------------------------------------------------
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -51,7 +53,8 @@ int main(void)
 		BeginDrawing();
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
 		
-		drawMap(file.position, file.size);
+		if(fileLoaded)
+			drawMap(file.position, file.size);
 
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
@@ -168,8 +171,10 @@ void drawChar(unsigned char *drawfont, int posx, int posy)
 }
 
 //carga fichero y reserva memoria para el buffer
-int loadFile(const char* filename)
+bool loadFile(const char* filename)
 {
+	//No estamos comprobando que se haya podido cargar el fichero
+
 	//si tenemos un buffer del fichero anterior lo cerramos
 	if (spyBuffer) free(spyBuffer);
 
@@ -187,11 +192,14 @@ int loadFile(const char* filename)
 	//Requerimos nuestra memoria
 	spyBuffer = malloc(sizeof(unsigned char) * file.size);
 	if (!spyBuffer)
+	{
 		puts("Cant allocate spyBuffer");
+		return false;
+	}
 	else
 		spyBuffer = LoadFileData(file.name, &file.size);
 
-	return 0;
+	return true;
 }
 
 
@@ -216,8 +224,11 @@ void checkInput()
 	//// TODO ESTO ES MUY REPETIDO...MEJORAR YA
 	//// se deberia llamar a una funcion update state o algo asi...esta guarro
 
-	switch (GetKeyPressed())
+	if (fileLoaded)
 	{
+
+		switch (GetKeyPressed())
+		{
 		case KEY_F1:
 			MainWindowActive = !MainWindowActive;
 			break;
@@ -234,8 +245,8 @@ void checkInput()
 
 		case KEY_RIGHT:
 			file.position += nextscansize;
-			if (file.position > file.size-8)
-				file.position = file.size-8;
+			if (file.position > file.size - 8)
+				file.position = file.size - 8;
 			break;
 
 		case KEY_UP:
@@ -267,53 +278,58 @@ void checkInput()
 			if (pixelSize > 8)
 				pixelSize = 8;
 			break;
-	
-	}
 
-	if (IsKeyDown(KEY_LEFT_ALT))
-		rawEdit();
+		}
 
-	if(IsKeyReleased(KEY_UP))
-	{
-		upScroll = false;
-		downScroll = false;
-		
-	}
-	else if (IsKeyReleased(KEY_DOWN))
-	{
-		upScroll = false;
-		downScroll = false;
-	}
+		if (IsKeyDown(KEY_LEFT_ALT))
+			rawEdit();
 
-	//Esto debe de estar aqui?
-	if (upScroll)
-	{
-		file.position -= (nextscansize * 40);
-		if (file.position < 0)
-			file.position = 0;
-	}
-	else if (downScroll)
-	{
-		file.position += (nextscansize * 40);
-		if (file.position > file.size - 8)
-			file.position = file.size - 8;
-	}
+		if (IsKeyReleased(KEY_UP))
+		{
+			upScroll = false;
+			downScroll = false;
 
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
-	{
-		file.position += getRelativePos()*font.w*8;
-		if (file.position > file.size -8)
-			file.position = file.size -8;
+		}
+		else if (IsKeyReleased(KEY_DOWN))
+		{
+			upScroll = false;
+			downScroll = false;
+		}
+
+		//Esto debe de estar aqui?
+		if (upScroll)
+		{
+			file.position -= (nextscansize * 40);
+			if (file.position < 0)
+				file.position = 0;
+		}
+		else if (downScroll)
+		{
+			file.position += (nextscansize * 40);
+			if (file.position > file.size - 8)
+				file.position = file.size - 8;
+		}
+
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
+		{
+			file.position += getRelativePos() * font.w * 8;
+			if (file.position > file.size - 8)
+				file.position = file.size - 8;
+		}
+
+		if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_S))
+			if (fileLoaded)
+				saveFile();
+
 	}
 
 	if (IsFileDropped())
 	{
 		FilePathList dropedFiles = LoadDroppedFiles();
-		loadFile(dropedFiles.paths[0]);
+		if (loadFile(dropedFiles.paths[0]))
+			fileLoaded = true;
 		UnloadDroppedFiles(dropedFiles);
 	}
-	if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_S))
-		saveFile();
 
 }
 
