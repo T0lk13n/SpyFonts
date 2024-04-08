@@ -20,7 +20,8 @@
 //			CHECK INPUT ES ABERRANTE
 //			HACER EL SAVE FILE (half done)
 //			AUMENTAR TAMAÑO DEL FONT
-
+//			CAMBIAR ICONO
+//			ARREGLAR SELECCION MANUAL HEIGHT
 
 
 int WinMain(void)
@@ -46,6 +47,8 @@ int WinMain(void)
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
 	SetTargetFPS(30);
 
+	GuiSetStyle(DEFAULT, TEXT_SIZE, 10);
+
 	//--------------------------------------------------------------------------------------
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -64,6 +67,8 @@ int WinMain(void)
 		//----------------------------------------------------------------------------------
 		float currentW = (float)GetScreenWidth();
 		float currentH = (float)GetScreenHeight();
+
+		//PREFS WINDOW
 		if (MainWindowActive)
 		{
 			font.h = AltoValue;
@@ -75,7 +80,7 @@ int WinMain(void)
 			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
 			
 			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);
-			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height", & AltoValue, 1, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height ", & AltoValue, 1, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
 			
 			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, currentH-100, 80, 10 }, 0, BLACK);
@@ -88,6 +93,8 @@ int WinMain(void)
 			GuiDrawText(my, (Rectangle) { currentW-190, currentH-70, 80, 10 }, 0, BLACK);
 		}
 
+
+		//HELP WINDOW
 		if (HelpWindowActive)
 		{
 			HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
@@ -270,11 +277,11 @@ void checkInput()
 			break;
 
 		case KEY_HOME:
-			file.position = 0;
+			newPosition(-file.position);
 			break;
 
 		case KEY_END:
-			file.position = file.size - 8;
+			newPosition(file.size - file.position);
 			break;
 
 		case KEY_Z:
@@ -410,5 +417,4 @@ void newPosition(long newPosition)
 		file.position = file.size - 8;
 	if (file.position < 0)
 		file.position = 0;
-
 }

@@ -22,6 +22,7 @@
     <ClCompile Include="SpyFonts.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SpyFont.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
