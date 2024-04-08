@@ -43,3 +43,4 @@ void checkInput();
 int getRelativePos();
 void rawEdit();
 int gfxToBuffer();
+void newPosition(long newPosition);
