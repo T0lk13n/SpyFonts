@@ -11,6 +11,7 @@
 //DONE:
 //			NO CARGAR PROYECTO POR DEFECTO
 //			QUITAR CONSOLE EN RELEASE
+//			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
 
 
 
@@ -18,7 +19,6 @@
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
 //			HACER EL SAVE FILE (half done)
-//			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
 //			AUMENTAR TAMAÑO DEL FONT
 
 
@@ -105,6 +105,7 @@ int WinMain(void)
 			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 140, 180, 10 }, 0, BLACK);
 			GuiDrawText("Lctrl + s - Save file", (Rectangle) { currentW - 390, currentH - 130, 180, 10 }, 0, BLACK);
 			GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 120, 180, 10 }, 0, BLACK);
+			GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 110, 180, 10 }, 0, BLACK);
 		}
 		
 		//----------------------------------------------------------------------------------
@@ -242,15 +243,11 @@ void checkInput()
 			break;
 
 		case KEY_LEFT:
-			file.position -= nextscansize;
-			if (file.position < 0)
-				file.position = 0;
+			newPosition(-nextscansize);
 			break;
 
 		case KEY_RIGHT:
-			file.position += nextscansize;
-			if (file.position > file.size - 8)
-				file.position = file.size - 8;
+			newPosition(nextscansize);
 			break;
 
 		case KEY_UP:
@@ -261,6 +258,15 @@ void checkInput()
 		case KEY_DOWN:
 			upScroll = false;
 			downScroll = true;
+			break;
+
+		//Move Byte by byte
+		case KEY_N:
+			newPosition(-1);
+			break;
+
+		case KEY_M:
+			newPosition(1);
 			break;
 
 		case KEY_HOME:
@@ -301,29 +307,26 @@ void checkInput()
 		}
 
 		//Esto debe de estar aqui?
+		//Fast Scroll
 		if (upScroll)
-		{
-			file.position -= (nextscansize * 40);
-			if (file.position < 0)
-				file.position = 0;
-		}
+			newPosition(-nextscansize * 40);		//PORQUE 40? NO MAGIC NUMBERS AGAIN!
 		else if (downScroll)
-		{
-			file.position += (nextscansize * 40);
-			if (file.position > file.size - 8)
-				file.position = file.size - 8;
-		}
+			newPosition(nextscansize * 40);
 
+		//Move Byte by byte
+
+
+		//Move to mouse pointer click
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
-		{
-			file.position += getRelativePos() * font.w * 8;
-			if (file.position > file.size - 8)
-				file.position = file.size - 8;
-		}
+			newPosition(getRelativePos() * font.w * 8);
 
+
+		//SaveFile
 		if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_S))
-			if (fileLoaded)
-				saveFile();
+			if (fileLoaded) saveFile();
+
+
+
 
 	}
 
@@ -395,4 +398,17 @@ int gfxToBuffer()
 	//printf("x: %d  y: %d  yAbs: %d\n", x, y, yAbs);
 
 	return x+yAbs+y; // *= font.w * font.h;
+}
+
+
+
+//Actualiza la posicion del buffer en pantalla
+void newPosition(long newPosition)
+{
+	file.position += newPosition;
+	if (file.position > file.size - 8)
+		file.position = file.size - 8;
+	if (file.position < 0)
+		file.position = 0;
+
 }
