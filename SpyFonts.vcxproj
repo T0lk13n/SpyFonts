@@ -23,7 +23,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SpyFont.h" />
+    <ClInclude Include="SpyFonts.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpyFonts.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="SCP.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

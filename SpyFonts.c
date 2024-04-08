@@ -6,7 +6,7 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-#include "SpyFont.h"
+#include "SpyFonts.h"
 
 //DONE:
 //			NO CARGAR PROYECTO POR DEFECTO
@@ -20,7 +20,7 @@
 //			CHECK INPUT ES ABERRANTE
 //			HACER EL SAVE FILE (half done)
 //			AUMENTAR TAMAÑO DEL FONT
-//			CAMBIAR ICONO
+//			CAMBIAR ICONO (falta icono ventana)
 //			ARREGLAR SELECCION MANUAL HEIGHT
 
 
