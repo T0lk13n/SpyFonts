@@ -8,10 +8,13 @@
 
 #include "SpyFonts.h"
 
+//#include <windows.h>		//for resources
+
 //DONE:
 //			NO CARGAR PROYECTO POR DEFECTO
 //			QUITAR CONSOLE EN RELEASE
 //			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
+//			CAMBIAR PUNTERO EN MODO EDICION
 
 
 
@@ -21,7 +24,7 @@
 //			HACER EL SAVE FILE (half done)
 //			AUMENTAR TAMAÑO DEL FONT
 //			CAMBIAR ICONO (falta icono ventana)
-//			ARREGLAR SELECCION MANUAL HEIGHT
+//			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 
 
 int WinMain(void)
@@ -34,7 +37,7 @@ int WinMain(void)
 	//----------------------------------------------------------------------------------
 	font.w = UNO;
 	font.h = 8;	
-
+	
 	//bool AnchoEditMode = false;
 	int AnchoValue = font.w-1;
 	bool AltoEditMode = false;
@@ -49,19 +52,20 @@ int WinMain(void)
 
 	GuiSetStyle(DEFAULT, TEXT_SIZE, 10);
 
+
 	//--------------------------------------------------------------------------------------
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		checkInput();
 		
+
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
 		
 		if(fileLoaded)
-			drawMap(file.position, file.size);
+			drawMap(file.position, file.size);	//PORQUE LO DIBUJAMOS SIEMPRE?
 
 		// raygui: controls drawing
 		//----------------------------------------------------------------------------------
@@ -80,7 +84,7 @@ int WinMain(void)
 			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
 			
 			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);
-			if (GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height ", & AltoValue, 1, 100, AltoEditMode)) AltoEditMode = !AltoEditMode;
+			GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height ", & AltoValue, 1, 100, false);
 			
 			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
 			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, currentH-100, 80, 10 }, 0, BLACK);
@@ -115,11 +119,10 @@ int WinMain(void)
 			GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 110, 180, 10 }, 0, BLACK);
 		}
 		
-		//----------------------------------------------------------------------------------
 
+
+		checkInput();
 		EndDrawing();
-	
-		//----------------------------------------------------------------------------------
 	}
 
 	// De-Initialization
@@ -299,7 +302,13 @@ void checkInput()
 		}
 
 		if (IsKeyDown(KEY_LEFT_ALT))
+		{
+			SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 			rawEdit();
+
+		}
+		else
+			SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 
 		if (IsKeyReleased(KEY_UP))
 		{
