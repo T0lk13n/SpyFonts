@@ -25,7 +25,8 @@
 //			AUMENTAR TAMAÑO DEL FONT
 //			CAMBIAR ICONO (falta icono ventana)
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
-
+//			ARREGLAR EDITMODE EN LA ULTIMA COLUMNA SI NO ES MULTIPLO
+//			NO SE SI ME GUSTA LO DE ADAPTWINDOW
 
 int WinMain(void)
 {
@@ -57,8 +58,6 @@ int WinMain(void)
 	// Main loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
-		
-
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
@@ -229,6 +228,7 @@ int saveFile()
 }
 
 
+
 /// INPUT 
 void checkInput()
 {
@@ -241,7 +241,6 @@ void checkInput()
 
 	if (fileLoaded)
 	{
-
 		switch (GetKeyPressed())
 		{
 		case KEY_F1:
@@ -270,7 +269,7 @@ void checkInput()
 			downScroll = true;
 			break;
 
-		//Move Byte by byte
+			//Move Byte by byte
 		case KEY_N:
 			newPosition(-1);
 			break;
@@ -298,8 +297,11 @@ void checkInput()
 			if (pixelSize > 8)
 				pixelSize = 8;
 			break;
+		}//switch
 
-		}
+
+
+
 
 		if (IsKeyDown(KEY_LEFT_ALT))
 		{
@@ -377,13 +379,12 @@ int getRelativePos()
 
 
 
-
-/// <summary>
-/// AUN FALLA EN ALGUNA POSICION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///     PUEDE QUE SEA GFXTOBUFFER QUE NO SIEMPRE DEVUELVE BIEN
-/// </summary>
 void rawEdit()
 {
+	int charSize = font.w * 8 * pixelSize;
+	int rightLimit = (GetScreenWidth() / charSize) * charSize;
+	if (GetMouseX() > rightLimit) return;
+
 	int x = (GetMouseX() / pixelSize) * (font.w * pixelSize);
 	int y = (GetMouseY()  / pixelSize) * pixelSize;
 	DrawRectangle(x, y, pixelSize, pixelSize, RED);
@@ -402,10 +403,11 @@ void rawEdit()
 int gfxToBuffer()
 {
 	int currentW = GetScreenWidth();
+	int charSize = font.w * 8 * pixelSize;
 
-	int charsperLargo = currentW / (font.w * 8 * pixelSize);
-	int x = ((GetMouseX() * charsperLargo) / currentW);
-	x *= font.w * font.h;
+	int charsperLargo = (currentW / charSize);
+	int x = ((GetMouseX() * charsperLargo) / (charSize * charsperLargo));     //currentW);
+	x *= (font.w * font.h);
 
 	int y = (GetMouseY() / pixelSize);  //% font.h; // *pixelSize;
 	int yAbs = (y / (font.h)) *(charsperLargo * font.h);
