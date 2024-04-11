@@ -17,6 +17,7 @@
 //			CAMBIAR PUNTERO EN MODO EDICION
 //			FOCUS WINDOW AFTER DRAG AND DROP
 //			AUMENTAR TAMAÑO DEL FONT
+//			UNDO
 
 
 
@@ -26,8 +27,8 @@
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
-//			HACER EL SAVE FILE (half done) -> AHORA NO FUNCIONA!!!!
-//			UNDO
+//			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
+//			USAR SHORTCUTS COHERENTES CON EL STANDARD
 
 
 int WinMain(void)
@@ -115,7 +116,7 @@ int WinMain(void)
 			GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 115, 180, 10 }, 0, BLACK);
 			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 100, 180, 10 }, 0, BLACK);
 			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 85, 180, 10 }, 0, BLACK);
-			GuiDrawText("Lctrl + s - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
+			GuiDrawText("Lctrl + a - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
 			GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 55, 180, 10 }, 0, BLACK);
 			GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 40, 180, 10 }, 0, BLACK);
 			GuiDrawText("Ctrl U - Undo", (Rectangle) { currentW - 390, currentH - 25, 180, 10 }, 0, BLACK);
@@ -301,13 +302,14 @@ void checkInput()
 				pixelSize = 8;
 			break;
 
+		case (KEY_LEFT_CONTROL & KEY_A):
+			saveFile();
+			break;
+
 		case (KEY_LEFT_CONTROL & KEY_U):
 			unDo();
 			break;
 
-		case (KEY_LEFT_CONTROL & KEY_S):
-			saveFile();
-			break;
 
 		}//switch
 
