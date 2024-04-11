@@ -16,16 +16,17 @@
 //			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
 //			CAMBIAR PUNTERO EN MODO EDICION
 //			FOCUS WINDOW AFTER DRAG AND DROP
+//			AUMENTAR TAMAÑO DEL FONT
 
 
 
 //TODO: 
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
-//			HACER EL SAVE FILE (half done) -> AHORA NO FUNCIONA!!!!
-//			AUMENTAR TAMAÑO DEL FONT
 //			CAMBIAR ICONO (falta icono ventana)
+//			USAR OTRO FONT MAS LEGIBLE
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
+//			HACER EL SAVE FILE (half done) -> AHORA NO FUNCIONA!!!!
 //			UNDO
 
 
@@ -437,15 +438,16 @@ void newPosition(long newPosition)
 
 void addUndo(int position, unsigned char byte)
 {
-	undo.position[undo.index] = position;
-	undo.byte[undo.index] = byte;
-
-	undo.index++;
 	if (undo.index >= UNDO_MAX)
 	{
 		undo.index = UNDO_MAX - 1;
 		undoDisplace(&undo);
 	}
+
+	undo.position[undo.index] = position;
+	undo.byte[undo.index] = byte;
+
+	undo.index++;
 }
 
 void unDo()
@@ -462,5 +464,9 @@ void unDo()
 //Si llega al maximo de niveles de undo elimina el primero y desplaza para tener el ultimo libre
 void undoDisplace(undo_t *undo)
 {
-
+	for (int i = 0; i < UNDO_MAX-1; i++)
+	{
+		(*undo).position[i] = (*undo).position[i + 1];
+		(*undo).byte[i] = (*undo).byte[i + 1];
+	}
 }
