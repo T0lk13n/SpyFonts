@@ -15,6 +15,7 @@
 //			QUITAR CONSOLE EN RELEASE
 //			INCREMENTAR/DECREMENTAR POR BYTES (para ajuste fino de algunos ficheros)
 //			CAMBIAR PUNTERO EN MODO EDICION
+//			FOCUS WINDOW AFTER DRAG AND DROP
 
 
 
@@ -25,8 +26,8 @@
 //			AUMENTAR TAMAÑO DEL FONT
 //			CAMBIAR ICONO (falta icono ventana)
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
-//			ARREGLAR EDITMODE EN LA ULTIMA COLUMNA SI NO ES MULTIPLO
-//			NO SE SI ME GUSTA LO DE ADAPTWINDOW
+//			UNDO
+
 
 int WinMain(void)
 {
@@ -116,6 +117,7 @@ int WinMain(void)
 			GuiDrawText("Lctrl + s - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
 			GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 55, 180, 10 }, 0, BLACK);
 			GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 40, 180, 10 }, 0, BLACK);
+			GuiDrawText("Ctrl U - Undo", (Rectangle) { currentW - 390, currentH - 25, 180, 10 }, 0, BLACK);
 		}
 		
 
@@ -302,16 +304,16 @@ void checkInput()
 
 
 
-
+		//Edit Mode
 		if (IsKeyDown(KEY_LEFT_ALT))
 		{
 			SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 			rawEdit();
-
 		}
 		else
 			SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 
+		//Fast Scroll
 		if (IsKeyReleased(KEY_UP))
 		{
 			upScroll = false;
@@ -331,8 +333,6 @@ void checkInput()
 		else if (downScroll)
 			newPosition(nextscansize * 40);
 
-		//Move Byte by byte
-
 
 		//Move to mouse pointer click
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
@@ -340,13 +340,14 @@ void checkInput()
 
 
 		//SaveFile
-		if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_S))
+		if (IsKeyDown(KEY_LEFT_CONTROL & KEY_S))
 			if (fileLoaded) saveFile();
 
+		//UNDO
+		if (IsKeyDown(KEY_LEFT_CONTROL & KEY_U))
+			unDo();
 
-
-
-	}
+	}//if fileloaded
 
 	if (IsFileDropped())
 	{
@@ -354,6 +355,7 @@ void checkInput()
 		if (loadFile(dropedFiles.paths[0]))
 			fileLoaded = true;
 		UnloadDroppedFiles(dropedFiles);
+		SetWindowFocused();
 	}
 
 }
@@ -392,10 +394,13 @@ void rawEdit()
 	int bufferPosition = file.position + gfxToBuffer();
 
 	int pixelShift = x / (font.w * pixelSize) % 8;
-	unsigned byte = 0b10000000 >> pixelShift;
+	unsigned char byte = 0b10000000 >> pixelShift;
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
 		spyBuffer[bufferPosition] ^= byte;
+		addUndo(bufferPosition, byte);
+	}
 }
 
 
@@ -428,4 +433,34 @@ void newPosition(long newPosition)
 		file.position = file.size - 8;
 	if (file.position < 0)
 		file.position = 0;
+}
+
+void addUndo(int position, unsigned char byte)
+{
+	undo.position[undo.index] = position;
+	undo.byte[undo.index] = byte;
+
+	undo.index++;
+	if (undo.index >= UNDO_MAX)
+	{
+		undo.index = UNDO_MAX - 1;
+		undoDisplace(&undo);
+	}
+}
+
+void unDo()
+{
+	undo.index--;
+	if (undo.index >= 0)
+	{
+		spyBuffer[undo.position[undo.index]] ^= undo.byte[undo.index];
+	}
+	else
+		undo.index = 0;
+}
+
+//Si llega al maximo de niveles de undo elimina el primero y desplaza para tener el ultimo libre
+void undoDisplace(undo_t *undo)
+{
+
 }
