@@ -22,7 +22,7 @@
 //TODO: 
 //			REFACTORIZAR ESTE LIO URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
-//			HACER EL SAVE FILE (half done)
+//			HACER EL SAVE FILE (half done) -> AHORA NO FUNCIONA!!!!
 //			AUMENTAR TAMAÑO DEL FONT
 //			CAMBIAR ICONO (falta icono ventana)
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
@@ -299,6 +299,15 @@ void checkInput()
 			if (pixelSize > 8)
 				pixelSize = 8;
 			break;
+
+		case (KEY_LEFT_CONTROL & KEY_U):
+			unDo();
+			break;
+
+		case (KEY_LEFT_CONTROL & KEY_S):
+			saveFile();
+			break;
+
 		}//switch
 
 
@@ -336,16 +345,7 @@ void checkInput()
 
 		//Move to mouse pointer click
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
-			newPosition(getRelativePos() * font.w * 8);
-
-
-		//SaveFile
-		if (IsKeyDown(KEY_LEFT_CONTROL & KEY_S))
-			if (fileLoaded) saveFile();
-
-		//UNDO
-		if (IsKeyDown(KEY_LEFT_CONTROL & KEY_U))
-			unDo();
+			newPosition(getRelativePos() * font.w * 8);	
 
 	}//if fileloaded
 
