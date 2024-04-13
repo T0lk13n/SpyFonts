@@ -22,7 +22,7 @@
 
 
 //TODO: 
-//			REFACTORIZAR ESTE LIO URGENTEMENTE
+//			REFACTORIZAR ESTE LIO de CHECKINPUT URGENTEMENTE
 //			CHECK INPUT ES ABERRANTE
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
@@ -41,21 +41,12 @@ int WinMain(void)
 	//----------------------------------------------------------------------------------
 	font.w = UNO;
 	font.h = 8;	
-	
-	//bool AnchoEditMode = false;
-	int AnchoValue = font.w-1;
-	bool AltoEditMode = false;
-	int AltoValue = font.h;
-	bool FileEditMode = false;
-	char positionbuffer[8];
 
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts - tolkien 2024");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
-	SetTargetFPS(30);
-
 	GuiSetStyle(DEFAULT, TEXT_SIZE, 12);
-
+	SetTargetFPS(30);
 
 	//--------------------------------------------------------------------------------------
 	// Main loop
@@ -64,66 +55,12 @@ int WinMain(void)
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
+
 		ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
-		
 		if(fileLoaded)
 			drawMap(file.position, file.size);	//PORQUE LO DIBUJAMOS SIEMPRE?
 
-		// raygui: controls drawing
-		//----------------------------------------------------------------------------------
-		float currentW = (float)GetScreenWidth();
-		float currentH = (float)GetScreenHeight();
-
-		//PREFS WINDOW
-		if (MainWindowActive)
-		{
-			font.h = AltoValue;
-			font.w = AnchoValue + 1;
-			sprintf(positionbuffer, "0x%x", file.position);			//QUISIERA QUE SOLO SE ACTUALIZARA AL MOVERNOS EN EL BUFFER pero no es grave
-
-			MainWindowActive = !GuiWindowBox((Rectangle) { currentW-200, currentH-275, 200, 272 }, "F1 toggle window");
-			
-			GuiGroupBox((Rectangle) { currentW-195, currentH-240, 190, 99 }, "Font size");
-			
-			GuiToggleGroup((Rectangle) { currentW-142, currentH-230, 60, 25 }, "8;16", &AnchoValue);
-			GuiSpinner((Rectangle) { currentW-140, currentH-190, 119, 25 }, "Height ", & AltoValue, 1, 100, false);
-			
-			GuiDrawText("Position: ", (Rectangle) { currentW-190, currentH-100, 80, 10 }, 0, BLACK);
-			GuiDrawText(positionbuffer, (Rectangle) { currentW-140, currentH-100, 80, 10 }, 0, BLACK);
-
-			char mx[6] = "";
-			sprintf(mx, "%d", GetMouseX()/pixelSize);
-			char my[6] = "";
-			sprintf(my, "%d", GetMouseY()/pixelSize);
-			GuiDrawText(mx, (Rectangle) { currentW -190, currentH-80, 80, 10 }, 0, BLACK);
-			GuiDrawText(my, (Rectangle) { currentW-190, currentH-70, 80, 10 }, 0, BLACK);
-		}
-
-
-		//HELP WINDOW
-		if (HelpWindowActive)
-		{
-			HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
-			GuiDrawText("F1  - toggle main window", (Rectangle) { currentW - 390, currentH - 250, 180, 10 }, 0, BLACK);
-			GuiDrawText("F2 - toggle help window", (Rectangle) { currentW - 390, currentH - 235, 180, 10 }, 0, BLACK);
-			GuiDrawText("Left Cursor - 1 char less", (Rectangle) { currentW - 390, currentH - 220, 180, 10 }, 0, BLACK);
-			GuiDrawText("Right Cursor - 1 char more", (Rectangle) { currentW - 390, currentH - 205, 180, 10 }, 0, BLACK);
-			GuiDrawText("Up Cursor - less lot chars", (Rectangle) { currentW - 390, currentH - 190, 180, 10 }, 0, BLACK);
-			GuiDrawText("Down Cursor - more lot chars", (Rectangle) { currentW - 390, currentH - 175, 180, 10 }, 0, BLACK);
-			GuiDrawText("Home key - go to start", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
-			GuiDrawText("End key - go to finish", (Rectangle) { currentW - 390, currentH - 145, 180, 10 }, 0, BLACK);
-			GuiDrawText("Lshift + Lmouse - go to that char", (Rectangle) { currentW - 390, currentH - 130, 180, 10 }, 0, BLACK);
-			GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 115, 180, 10 }, 0, BLACK);
-			GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 100, 180, 10 }, 0, BLACK);
-			GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 85, 180, 10 }, 0, BLACK);
-			GuiDrawText("Lctrl + a - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
-			GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 55, 180, 10 }, 0, BLACK);
-			GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 40, 180, 10 }, 0, BLACK);
-			GuiDrawText("Ctrl U - Undo", (Rectangle) { currentW - 390, currentH - 25, 180, 10 }, 0, BLACK);
-		}
-		
-
-
+		drawGui();
 		checkInput();
 		EndDrawing();
 	}
@@ -224,6 +161,9 @@ bool loadFile(const char* filename)
 
 int saveFile()
 {
+	//Esto se tiene que dibujar en el loop de BeginDrwaing() ??
+	//int result = GuiMessageBox((Rectangle) { 300, 200, 300, 200 }, "Save", "Overwrite?", "Yes;No");
+
 	if(!SaveFileData(file.name, spyBuffer, file.size))
 		printf("No save file");
 
@@ -343,7 +283,7 @@ void checkInput()
 		if (upScroll)
 			newPosition(-nextscansize * 40);		//PORQUE 40? NO MAGIC NUMBERS AGAIN!
 		else if (downScroll)
-			newPosition(nextscansize * 40);
+			newPosition(nextscansize * 40);			//* 40 VELOCIDAD SCROLL?
 
 
 		//Move to mouse pointer click
@@ -470,5 +410,75 @@ void undoDisplace(undo_t *undo)
 	{
 		(*undo).position[i] = (*undo).position[i + 1];
 		(*undo).byte[i] = (*undo).byte[i + 1];
+	}
+}
+
+
+void drawGui()
+{
+	//bool AnchoEditMode = false;
+	int AnchoValue = font.w - 1;
+	bool AltoEditMode = false;
+	int AltoValue = font.h;
+	bool FileEditMode = false;
+	char positionbuffer[8];
+
+	// raygui: controls drawing
+//----------------------------------------------------------------------------------
+	float currentW = (float)GetScreenWidth();
+	float currentH = (float)GetScreenHeight();
+
+	//PREFS WINDOW
+	if (MainWindowActive)
+	{
+		font.h = AltoValue;
+		font.w = AnchoValue + 1;
+		sprintf(positionbuffer, "0x%x", file.position);			//QUISIERA QUE SOLO SE ACTUALIZARA AL MOVERNOS EN EL BUFFER pero no es grave
+
+		MainWindowActive = !GuiWindowBox((Rectangle) { currentW - 200, currentH - 275, 200, 272 }, "F1 toggle window");
+
+		GuiGroupBox((Rectangle) { currentW - 195, currentH - 240, 190, 99 }, "Font size");
+
+		GuiToggleGroup((Rectangle) { currentW - 142, currentH - 230, 60, 25 }, "8;16", & AnchoValue);
+		GuiSpinner((Rectangle) { currentW - 140, currentH - 190, 119, 25 }, "Height ", & AltoValue, 1, 100, false);
+
+		GuiDrawText("Position: ", (Rectangle) { currentW - 190, currentH - 100, 80, 10 }, 0, BLACK);
+		GuiDrawText(positionbuffer, (Rectangle) { currentW - 140, currentH - 100, 80, 10 }, 0, BLACK);
+
+		char mx[6] = "";
+		sprintf(mx, "%d", GetMouseX() / pixelSize);
+		char my[6] = "";
+		sprintf(my, "%d", GetMouseY() / pixelSize);
+		GuiDrawText(mx, (Rectangle) { currentW - 190, currentH - 80, 80, 10 }, 0, BLACK);
+		GuiDrawText(my, (Rectangle) { currentW - 190, currentH - 70, 80, 10 }, 0, BLACK);
+
+
+		//GuiSliderBar()
+		//GuiMessageBox()
+		//GuiDrawIcon();
+
+	}
+
+
+	//HELP WINDOW
+	if (HelpWindowActive)
+	{
+		HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
+		GuiDrawText("F1  - toggle main window", (Rectangle) { currentW - 390, currentH - 250, 180, 10 }, 0, BLACK);
+		GuiDrawText("F2 - toggle help window", (Rectangle) { currentW - 390, currentH - 235, 180, 10 }, 0, BLACK);
+		GuiDrawText("Left Cursor - 1 char less", (Rectangle) { currentW - 390, currentH - 220, 180, 10 }, 0, BLACK);
+		GuiDrawText("Right Cursor - 1 char more", (Rectangle) { currentW - 390, currentH - 205, 180, 10 }, 0, BLACK);
+		GuiDrawText("Up Cursor - less lot chars", (Rectangle) { currentW - 390, currentH - 190, 180, 10 }, 0, BLACK);
+		GuiDrawText("Down Cursor - more lot chars", (Rectangle) { currentW - 390, currentH - 175, 180, 10 }, 0, BLACK);
+		GuiDrawText("Home key - go to start", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
+		GuiDrawText("End key - go to finish", (Rectangle) { currentW - 390, currentH - 145, 180, 10 }, 0, BLACK);
+		GuiDrawText("Lshift + Lmouse - go to that char", (Rectangle) { currentW - 390, currentH - 130, 180, 10 }, 0, BLACK);
+		GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 115, 180, 10 }, 0, BLACK);
+		GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 100, 180, 10 }, 0, BLACK);
+		GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 85, 180, 10 }, 0, BLACK);
+		GuiDrawText("Lctrl + a - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
+		GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 55, 180, 10 }, 0, BLACK);
+		GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 40, 180, 10 }, 0, BLACK);
+		GuiDrawText("Ctrl U - Undo", (Rectangle) { currentW - 390, currentH - 25, 180, 10 }, 0, BLACK);
 	}
 }

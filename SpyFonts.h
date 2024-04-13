@@ -57,3 +57,4 @@ void newPosition(long newPosition);
 void addUndo(int position, unsigned char byte);
 void unDo();
 void undoDisplace(undo_t* undo);
+void drawGui();
