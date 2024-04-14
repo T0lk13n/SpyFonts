@@ -18,6 +18,7 @@
 //			FOCUS WINDOW AFTER DRAG AND DROP
 //			AUMENTAR TAMAÑO DEL FONT
 //			UNDO
+//			NO FUNCIONAN LAS OPCIONES DEL GUI AL HABER CAMBIADO A DRAWGUI()
 
 
 
@@ -30,6 +31,9 @@
 //			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 
+
+int AnchoValue = 0;
+int AltoValue = 8;
 
 int WinMain(void)
 {
@@ -408,18 +412,14 @@ void undoDisplace(undo_t *undo)
 {
 	for (int i = 0; i < UNDO_MAX-1; i++)
 	{
-		(*undo).position[i] = (*undo).position[i + 1];
-		(*undo).byte[i] = (*undo).byte[i + 1];
+		undo->position[i] = undo->position[i + 1];
+		undo->byte[i] = undo->byte[i + 1];
 	}
 }
 
 
 void drawGui()
 {
-	//bool AnchoEditMode = false;
-	int AnchoValue = font.w - 1;
-	bool AltoEditMode = false;
-	int AltoValue = font.h;
 	bool FileEditMode = false;
 	char positionbuffer[8];
 
@@ -431,8 +431,6 @@ void drawGui()
 	//PREFS WINDOW
 	if (MainWindowActive)
 	{
-		font.h = AltoValue;
-		font.w = AnchoValue + 1;
 		sprintf(positionbuffer, "0x%x", file.position);			//QUISIERA QUE SOLO SE ACTUALIZARA AL MOVERNOS EN EL BUFFER pero no es grave
 
 		MainWindowActive = !GuiWindowBox((Rectangle) { currentW - 200, currentH - 275, 200, 272 }, "F1 toggle window");
@@ -452,6 +450,8 @@ void drawGui()
 		GuiDrawText(mx, (Rectangle) { currentW - 190, currentH - 80, 80, 10 }, 0, BLACK);
 		GuiDrawText(my, (Rectangle) { currentW - 190, currentH - 70, 80, 10 }, 0, BLACK);
 
+		font.h = AltoValue;
+		font.w = AnchoValue + 1;
 
 		//GuiSliderBar()
 		//GuiMessageBox()

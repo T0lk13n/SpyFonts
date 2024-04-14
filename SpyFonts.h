@@ -46,13 +46,13 @@ bool fileLoaded = false;
 
 
 bool loadFile(const char* filename);
-int saveFile();
+int  saveFile();
 void drawMap(int position, int size);
 void drawChar(unsigned char *drawfont, int posx, int posy);
 void checkInput();
-int getRelativePos();
+int  getRelativePos();
 void rawEdit();
-int gfxToBuffer();
+int  gfxToBuffer();
 void newPosition(long newPosition);
 void addUndo(int position, unsigned char byte);
 void unDo();
