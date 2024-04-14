@@ -35,7 +35,7 @@ typedef struct
 	int index;
 }undo_t;
 
-fontattr_t font;
+fontattr_t font = { UNO, 8 };
 file_t file;
 undo_t undo;
 

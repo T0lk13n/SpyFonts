@@ -32,7 +32,7 @@
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 
 
-int AnchoValue = 0;
+int AnchoValue = 0;	// :/
 int AltoValue = 8;
 
 int WinMain(void)
@@ -40,12 +40,6 @@ int WinMain(void)
 	SetTraceLogLevel(LOG_NONE);
 
 	// Initialization
-	//--------------------------------------------------------------------------------------
-	// layout_name: controls initialization
-	//----------------------------------------------------------------------------------
-	font.w = UNO;
-	font.h = 8;	
-
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts - tolkien 2024");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
@@ -285,9 +279,9 @@ void checkInput()
 		//Esto debe de estar aqui?
 		//Fast Scroll
 		if (upScroll)
-			newPosition(-nextscansize * 40);		//PORQUE 40? NO MAGIC NUMBERS AGAIN!
+			newPosition(-nextscansize * 40);		//NO MAGIC NUMBERS AGAIN!
 		else if (downScroll)
-			newPosition(nextscansize * 40);			//* 40 VELOCIDAD SCROLL?
+			newPosition(nextscansize * 40);			//* 40 VELOCIDAD SCROLL
 
 
 		//Move to mouse pointer click
@@ -456,7 +450,6 @@ void drawGui()
 		//GuiSliderBar()
 		//GuiMessageBox()
 		//GuiDrawIcon();
-
 	}
 
 
