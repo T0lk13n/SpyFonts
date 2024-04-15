@@ -43,7 +43,7 @@ unsigned char *spyBuffer = NULL;
 int nextscansize = 0;
 bool editMode = false;
 bool fileLoaded = false;
-
+bool saveRequester = false;
 
 bool loadFile(const char* filename);
 int  saveFile();

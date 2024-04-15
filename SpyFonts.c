@@ -19,6 +19,7 @@
 //			AUMENTAR TAMAÑO DEL FONT
 //			UNDO
 //			NO FUNCIONAN LAS OPCIONES DEL GUI AL HABER CAMBIADO A DRAWGUI()
+//			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
 
 
 
@@ -28,7 +29,6 @@
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
-//			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 
 
@@ -157,20 +157,6 @@ bool loadFile(const char* filename)
 
 
 
-int saveFile()
-{
-	//Esto se tiene que dibujar en el loop de BeginDrwaing() ??
-	//int result = GuiMessageBox((Rectangle) { 300, 200, 300, 200 }, "Save", "Overwrite?", "Yes;No");
-
-	if(!SaveFileData(file.name, spyBuffer, file.size))
-		printf("No save file");
-
-	//check errors
-	return 0;
-}
-
-
-
 /// INPUT 
 void checkInput()
 {
@@ -241,7 +227,7 @@ void checkInput()
 			break;
 
 		case (KEY_LEFT_CONTROL & KEY_A):
-			saveFile();
+			saveRequester = true;
 			break;
 
 		case (KEY_LEFT_CONTROL & KEY_U):
@@ -456,22 +442,51 @@ void drawGui()
 	//HELP WINDOW
 	if (HelpWindowActive)
 	{
-		HelpWindowActive = !GuiWindowBox((Rectangle) { currentW - 400, currentH - 275, 200, 272 }, "F2 - Help window");
-		GuiDrawText("F1  - toggle main window", (Rectangle) { currentW - 390, currentH - 250, 180, 10 }, 0, BLACK);
-		GuiDrawText("F2 - toggle help window", (Rectangle) { currentW - 390, currentH - 235, 180, 10 }, 0, BLACK);
-		GuiDrawText("Left Cursor - 1 char less", (Rectangle) { currentW - 390, currentH - 220, 180, 10 }, 0, BLACK);
-		GuiDrawText("Right Cursor - 1 char more", (Rectangle) { currentW - 390, currentH - 205, 180, 10 }, 0, BLACK);
-		GuiDrawText("Up Cursor - less lot chars", (Rectangle) { currentW - 390, currentH - 190, 180, 10 }, 0, BLACK);
+		HelpWindowActive = !GuiWindowBox(			(Rectangle) { currentW - 400, currentH - 275, 200, 272}, "F2 - Help window");
+		GuiDrawText("F1  - toggle main window",		(Rectangle) { currentW - 390, currentH - 250, 180, 10 }, 0, BLACK);
+		GuiDrawText("F2 - toggle help window",		(Rectangle) { currentW - 390, currentH - 235, 180, 10 }, 0, BLACK);
+		GuiDrawText("Left Cursor - 1 char less",	(Rectangle) { currentW - 390, currentH - 220, 180, 10 }, 0, BLACK);
+		GuiDrawText("Right Cursor - 1 char more",	(Rectangle) { currentW - 390, currentH - 205, 180, 10 }, 0, BLACK);
+		GuiDrawText("Up Cursor - less lot chars",	(Rectangle) { currentW - 390, currentH - 190, 180, 10 }, 0, BLACK);
 		GuiDrawText("Down Cursor - more lot chars", (Rectangle) { currentW - 390, currentH - 175, 180, 10 }, 0, BLACK);
-		GuiDrawText("Home key - go to start", (Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
-		GuiDrawText("End key - go to finish", (Rectangle) { currentW - 390, currentH - 145, 180, 10 }, 0, BLACK);
+		GuiDrawText("Home key - go to start",		(Rectangle) { currentW - 390, currentH - 160, 180, 10 }, 0, BLACK);
+		GuiDrawText("End key - go to finish",		(Rectangle) { currentW - 390, currentH - 145, 180, 10 }, 0, BLACK);
 		GuiDrawText("Lshift + Lmouse - go to that char", (Rectangle) { currentW - 390, currentH - 130, 180, 10 }, 0, BLACK);
-		GuiDrawText("z key - Zoom out", (Rectangle) { currentW - 390, currentH - 115, 180, 10 }, 0, BLACK);
-		GuiDrawText("x key - Zoom in", (Rectangle) { currentW - 390, currentH - 100, 180, 10 }, 0, BLACK);
-		GuiDrawText("Drop file to open", (Rectangle) { currentW - 390, currentH - 85, 180, 10 }, 0, BLACK);
-		GuiDrawText("Lctrl + a - Save file", (Rectangle) { currentW - 390, currentH - 70, 180, 10 }, 0, BLACK);
-		GuiDrawText("Alt + Lmouse - Edit raw", (Rectangle) { currentW - 390, currentH - 55, 180, 10 }, 0, BLACK);
-		GuiDrawText("N <-> M - byte displacement", (Rectangle) { currentW - 390, currentH - 40, 180, 10 }, 0, BLACK);
-		GuiDrawText("Ctrl U - Undo", (Rectangle) { currentW - 390, currentH - 25, 180, 10 }, 0, BLACK);
+		GuiDrawText("z key - Zoom out",				(Rectangle) { currentW - 390, currentH - 115, 180, 10 }, 0, BLACK);
+		GuiDrawText("x key - Zoom in",				(Rectangle) { currentW - 390, currentH - 100, 180, 10 }, 0, BLACK);
+		GuiDrawText("Drop file to open",			(Rectangle) { currentW - 390, currentH -  85, 180, 10 }, 0, BLACK);
+		GuiDrawText("Lctrl + a - Save file",		(Rectangle) { currentW - 390, currentH -  70, 180, 10 }, 0, BLACK);
+		GuiDrawText("Alt + Lmouse - Edit raw",		(Rectangle) { currentW - 390, currentH -  55, 180, 10 }, 0, BLACK);
+		GuiDrawText("N <-> M - byte displacement",	(Rectangle) { currentW - 390, currentH -  40, 180, 10 }, 0, BLACK);
+		GuiDrawText("Ctrl U - Undo",				(Rectangle) { currentW - 390, currentH -  25, 180, 10 }, 0, BLACK);
 	}
+
+	if (saveRequester)
+	{
+		int result = GuiMessageBox((Rectangle) { 300, 200, 300, 200 }, "Save", "Overwrite?", "Yes;No");
+		
+		if (result == 0 || result == 2)
+			saveRequester = false;
+		else if(result ==1)
+		{
+			saveFile();
+			saveRequester = false;
+		}
+
+	}
+}
+
+
+
+int saveFile()
+{
+	//Esto se tiene que dibujar en el loop de BeginDrwaing() ??
+	
+	//int result = GuiMessageBox((Rectangle) { 300, 200, 300, 200 }, "Save", "Overwrite?", "Yes;No");
+
+	if (!SaveFileData(file.name, spyBuffer, file.size))
+	return -1; //printf("No save file");
+
+	//check errors
+	return 0;
 }
