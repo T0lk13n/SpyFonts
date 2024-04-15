@@ -40,10 +40,12 @@ file_t file;
 undo_t undo;
 
 unsigned char *spyBuffer = NULL;
-int nextscansize = 0;
+int	 nextscansize = 0;
 bool editMode = false;
 bool fileLoaded = false;
 bool saveRequester = false;
+bool modifiedFile = false;
+
 
 bool loadFile(const char* filename);
 int  saveFile();

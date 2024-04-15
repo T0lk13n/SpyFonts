@@ -20,6 +20,7 @@
 //			UNDO
 //			NO FUNCIONAN LAS OPCIONES DEL GUI AL HABER CAMBIADO A DRAWGUI()
 //			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
+//			SOLO SALVAR SI SE HA MODIFICADO ALGO
 
 
 
@@ -28,8 +29,8 @@
 //			CHECK INPUT ES ABERRANTE
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
-//			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
+//			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 
 
 int AnchoValue = 0;	// :/
@@ -152,6 +153,7 @@ bool loadFile(const char* filename)
 	else
 		spyBuffer = LoadFileData(file.name, &file.size);
 
+	modifiedFile = false;
 	return true;
 }
 
@@ -227,7 +229,7 @@ void checkInput()
 			break;
 
 		case (KEY_LEFT_CONTROL & KEY_A):
-			saveRequester = true;
+			if(modifiedFile) saveRequester = true;
 			break;
 
 		case (KEY_LEFT_CONTROL & KEY_U):
@@ -327,6 +329,15 @@ void rawEdit()
 	{
 		spyBuffer[bufferPosition] ^= byte;
 		addUndo(bufferPosition, byte);
+		if (!modifiedFile)
+		{
+			modifiedFile = true;
+			char winTitle[100];
+			strcpy(winTitle, "Amiga SpyFonts - tolkien 2024 - ");
+			strcat(winTitle, GetFileName(file.name));
+			strcat(winTitle, " - Modified");
+			SetWindowTitle(winTitle);
+		}
 	}
 }
 
@@ -489,4 +500,10 @@ int saveFile()
 
 	//check errors
 	return 0;
+}
+
+
+void setTitle()
+{
+
 }
