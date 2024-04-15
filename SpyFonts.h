@@ -45,6 +45,8 @@ bool editMode = false;
 bool fileLoaded = false;
 bool saveRequester = false;
 bool modifiedFile = false;
+bool checkQuit = false;
+bool quit = false;
 
 
 bool loadFile(const char* filename);

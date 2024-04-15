@@ -21,6 +21,7 @@
 //			NO FUNCIONAN LAS OPCIONES DEL GUI AL HABER CAMBIADO A DRAWGUI()
 //			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
 //			SOLO SALVAR SI SE HA MODIFICADO ALGO
+//			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 
 
 
@@ -30,7 +31,6 @@
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
-//			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 
 
 int AnchoValue = 0;	// :/
@@ -49,8 +49,18 @@ int WinMain(void)
 
 	//--------------------------------------------------------------------------------------
 	// Main loop
-	while (!WindowShouldClose())    // Detect window close button or ESC key
+	
+	while (!quit)   // Detect window close button or ESC key
 	{
+		if (WindowShouldClose() )
+		{
+			if (modifiedFile)
+				checkQuit = true;
+			else
+				quit = true;
+		}
+
+
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
@@ -483,7 +493,17 @@ void drawGui()
 			saveFile();
 			saveRequester = false;
 		}
+	}
 
+	if (checkQuit)
+	{
+		int result = GuiMessageBox((Rectangle) { 300, 200, 300, 200 }, "File has been modified", "Quit?", "Yes;No");
+		if (result == 0 || result == 2)
+		{
+			checkQuit = false;
+		}
+		else if (result == 1)
+			quit = true;
 	}
 }
 
