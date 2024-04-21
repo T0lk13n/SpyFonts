@@ -31,12 +31,16 @@
 //			CAMBIAR ICONO (falta icono ventana)
 //			USAR OTRO FONT MAS LEGIBLE
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
+//			SOLO DIBUJAR SI SE ACTUALIZA ALGO !!!
 
-
-int AnchoValue = 0;	// :/
+int AnchoValue = 0;
 int AltoValue = 8;
 
+#ifdef _WIN32
 int WinMain(void)
+#else
+int main()
+#endif
 {
 	SetTraceLogLevel(LOG_NONE);
 
