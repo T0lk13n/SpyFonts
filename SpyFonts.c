@@ -550,7 +550,7 @@ bool autoSearch()
 {
 	for (int pos = file.position; pos < file.size-8; pos++)
 	{
-		for (int font = 0; font < 3; font++)
+		for (int font = 0; font < NUMFONTS; font++)
 		{
 			for (int shift = 0; shift <= 5; shift++)
 			{

@@ -50,7 +50,7 @@ bool quit = false;
 
 
 
-#define SEARCH(index, font, LSR)	fontSearch[0][0] >> LSR == spyBuffer[index]   &&\
+#define SEARCH(index, font, LSR)	fontSearch[font][0] >> LSR == spyBuffer[index]   &&\
 									fontSearch[font][1] >> LSR == spyBuffer[index+1] &&\
 									fontSearch[font][2] >> LSR == spyBuffer[index+2] &&\
 									fontSearch[font][3] >> LSR == spyBuffer[index+3] &&\
@@ -60,37 +60,48 @@ bool quit = false;
 					 
 
 // Datos del font EXCLAMACION! 
-// Puede tener muchas variantes pero de momento miramos una
-const unsigned char fontSearch[3][7] =
-{{
-	{0b01000000},
-	{0b11100000},
-	{0b11100000},
-	{0b01000000},
-	{0b01000000},
-	{0b00000000},
-	{0b01000000}
-},
+// Puede tener muchas variantes...
+#define NUMFONTS 4
+const unsigned char fontSearch[NUMFONTS][7] =
 {
-	{0b01000000},
-	{0b01000000},
-	{0b01000000},
-	{0b01000000},
-	{0b01000000},
-	{0b00000000},
-	{0b01000000}
+	{
+		{0b01000000},
+		{0b11100000},
+		{0b11100000},
+		{0b01000000},
+		{0b01000000},
+		{0b00000000},
+		{0b01000000}
+	},
+	{
+		{0b01000000},
+		{0b01000000},
+		{0b01000000},
+		{0b01000000},
+		{0b01000000},
+		{0b00000000},
+		{0b01000000}
 
-},
-{
-	{0b01100000},
-	{0b01100000},
-	{0b01100000},
-	{0b01100000},
-	{0b01100000},
-	{0b00000000},
-	{0b01100000}
-
-} };
+	},
+	{
+		{0b01100000},
+		{0b01100000},
+		{0b01100000},
+		{0b01100000},
+		{0b01100000},
+		{0b00000000},
+		{0b01100000}
+	},
+	{
+		{0b01100000},
+		{0b01100000},
+		{0b01100000},
+		{0b01100000},
+		{0b00000000},
+		{0b00000000},
+		{0b01100000}
+	}
+};
 
 
 
