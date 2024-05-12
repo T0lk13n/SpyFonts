@@ -32,6 +32,10 @@
 //			USAR OTRO FONT MAS LEGIBLE
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 //			SOLO DIBUJAR SI SE ACTUALIZA ALGO !!!
+//			USAR MOUSE WHEEL PARA DESPLAZARSE
+//			FIX EDIT MODE CON FONT DE 16 DE ANCHO
+//			AUTOMATIC FONT SEARCH? (PRIMERA APROXIMACION)
+
 
 int AnchoValue = 0;
 int AltoValue = 8;
@@ -48,7 +52,7 @@ int main()
 	InitWindow(screenWidth, screenHeight, "Amiga SpyFonts - tolkien 2024");
 	SetWindowState(FLAG_WINDOW_RESIZABLE);
 	SetWindowMinSize(400, 200);               // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
-	GuiSetStyle(DEFAULT, TEXT_SIZE, 12);
+	GuiSetStyle(DEFAULT, TEXT_SIZE, 10);
 	SetTargetFPS(30);
 
 	//--------------------------------------------------------------------------------------
@@ -250,6 +254,9 @@ void checkInput()
 			unDo();
 			break;
 
+		case KEY_F:
+			autoSearch();
+			break;
 
 		}//switch
 
@@ -484,6 +491,7 @@ void drawGui()
 		GuiDrawText("Alt + Lmouse - Edit raw",		(Rectangle) { currentW - 390, currentH -  55, 180, 10 }, 0, BLACK);
 		GuiDrawText("N <-> M - byte displacement",	(Rectangle) { currentW - 390, currentH -  40, 180, 10 }, 0, BLACK);
 		GuiDrawText("Ctrl U - Undo",				(Rectangle) { currentW - 390, currentH -  25, 180, 10 }, 0, BLACK);
+		GuiDrawText("F - Auto Search Font",			(Rectangle) { currentW - 390, currentH -  10, 180, 10 }, 0, BLACK);
 	}
 
 	if (saveRequester)
@@ -530,4 +538,29 @@ int saveFile()
 void setTitle()
 {
 
+}
+
+
+
+// Hacemos busqueda de un caracter que esta siempre y es sencillo
+// aunque puede tener variantes que hay que tener en cuenta.
+
+//ES UN MEGA BUCLE BASTANTE FEO. MIRAR SI SE PUEDE OPTIMIZAR.
+bool autoSearch()
+{
+	for (int pos = file.position; pos < file.size-8; pos++)
+	{
+		for (int font = 0; font < 3; font++)
+		{
+			for (int shift = 0; shift <= 5; shift++)
+			{
+				if (SEARCH(pos, font, shift))
+				{
+					file.position = pos;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }

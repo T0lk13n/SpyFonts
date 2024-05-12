@@ -49,6 +49,52 @@ bool checkQuit = false;
 bool quit = false;
 
 
+
+#define SEARCH(index, font, LSR)	fontSearch[0][0] >> LSR == spyBuffer[index]   &&\
+									fontSearch[font][1] >> LSR == spyBuffer[index+1] &&\
+									fontSearch[font][2] >> LSR == spyBuffer[index+2] &&\
+									fontSearch[font][3] >> LSR == spyBuffer[index+3] &&\
+									fontSearch[font][4] >> LSR == spyBuffer[index+4] &&\
+									fontSearch[font][5] >> LSR == spyBuffer[index+5] &&\
+									fontSearch[font][6] >> LSR == spyBuffer[index+6]
+					 
+
+// Datos del font EXCLAMACION! 
+// Puede tener muchas variantes pero de momento miramos una
+const unsigned char fontSearch[3][7] =
+{{
+	{0b01000000},
+	{0b11100000},
+	{0b11100000},
+	{0b01000000},
+	{0b01000000},
+	{0b00000000},
+	{0b01000000}
+},
+{
+	{0b01000000},
+	{0b01000000},
+	{0b01000000},
+	{0b01000000},
+	{0b01000000},
+	{0b00000000},
+	{0b01000000}
+
+},
+{
+	{0b01100000},
+	{0b01100000},
+	{0b01100000},
+	{0b01100000},
+	{0b01100000},
+	{0b00000000},
+	{0b01100000}
+
+} };
+
+
+
+
 bool loadFile(const char* filename);
 int  saveFile();
 void drawMap(int position, int size);
@@ -62,3 +108,4 @@ void addUndo(int position, unsigned char byte);
 void unDo();
 void undoDisplace(undo_t* undo);
 void drawGui();
+bool autoSearch();
