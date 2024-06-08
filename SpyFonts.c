@@ -24,6 +24,7 @@
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
 //			AUTOMATIC FONT SEARCH (PRIMERA APROXIMACION) 
 //			EL AUTOSEARCH SE QUEDA EN LO ENCONTRADO Y HAY QUE MOVERSE ADELANTE PARA BUSCR MAS. CAMBIAR ESO.
+//			USAR MOUSE WHEEL PARA DESPLAZARSE O HACER ZOOM
 
 
 
@@ -34,7 +35,6 @@
 //			USAR OTRO FONT MAS LEGIBLE
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 //			SOLO DIBUJAR SI SE ACTUALIZA ALGO !!!
-//			USAR MOUSE WHEEL PARA DESPLAZARSE O HACER ZOOM
 //			FIX EDIT MODE CON FONT DE 16 DE ANCHO
 //			ALGUN REQUESTER EN AUTOMATIC FONT SEARCH ?
 
@@ -238,14 +238,12 @@ void checkInput()
 
 		case KEY_Z:
 			pixelSize--;
-			if (pixelSize < 1)
-				pixelSize = 1;
+			limitPixelSize();
 			break;
 
 		case KEY_X:
 			pixelSize++;
-			if (pixelSize > 8)
-				pixelSize = 8;
+			limitPixelSize();
 			break;
 
 		case (KEY_LEFT_CONTROL & KEY_A):
@@ -263,7 +261,14 @@ void checkInput()
 		}//switch
 
 
-
+		//MouseWheel
+		if(!IsKeyDown(KEY_LEFT_SHIFT))
+			newPosition(-GetMouseWheelMove() * nextscansize*40);
+		else
+		{
+			pixelSize += -GetMouseWheelMove();
+			limitPixelSize();
+		}
 
 		//Edit Mode
 		if (IsKeyDown(KEY_LEFT_ALT))
@@ -314,6 +319,13 @@ void checkInput()
 
 
 
+void limitPixelSize()
+{
+	if (pixelSize < 1)
+		pixelSize = 1;
+	else if (pixelSize > 8)
+		pixelSize = 8;
+}
 
 
 int getRelativePos()

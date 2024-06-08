@@ -120,3 +120,4 @@ void unDo();
 void undoDisplace(undo_t* undo);
 void drawGui();
 bool autoSearch();
+void limitPixelSize();
