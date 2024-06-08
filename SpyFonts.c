@@ -344,23 +344,23 @@ int getRelativePos()
 }
 
 
-void drawGrid()
+void drawGrid(int space, Color col )
 {
 	int	currentW = GetScreenWidth();
 	int currentH = GetScreenHeight();
-	for (size_t x = 0; x < currentW; x += pixelSize )
+	for (size_t x = 0; x < currentW; x += space )
 	{
-		DrawLine(x, 0, x, currentH, WHITE);
+		DrawLine(x, 0, x, currentH, col);
 	}
-	for (size_t y = 0; y < currentH; y += pixelSize)
+	for (size_t y = 0; y < currentH; y += space)
 	{
-		DrawLine(0, y, currentW, y, WHITE);
+		DrawLine(0, y, currentW, y, col);
 	}
 }
 
 void rawEdit()
 {
-	drawGrid();
+	editMode = true;
 	int charSize = font.w * 8 * pixelSize;
 	int rightLimit = (GetScreenWidth() / charSize) * charSize;
 	if (GetMouseX() > rightLimit) return;
@@ -470,6 +470,14 @@ void drawGui()
 	float currentW = (float)GetScreenWidth();
 	float currentH = (float)GetScreenHeight();
 
+	// Draw GRIDs
+	if (editMode)
+	{
+		drawGrid(pixelSize, WHITE);
+		editMode = false;
+	}
+	drawGrid(font.w * 8 * pixelSize, RED);
+
 	//PREFS WINDOW
 	if (MainWindowActive)
 	{
@@ -547,6 +555,7 @@ void drawGui()
 		else if (result == 1)
 			quit = true;
 	}
+
 }
 
 
