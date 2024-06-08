@@ -37,7 +37,7 @@
 //			SOLO DIBUJAR SI SE ACTUALIZA ALGO !!!
 //			FIX EDIT MODE CON FONT DE 16 DE ANCHO
 //			ALGUN REQUESTER EN AUTOMATIC FONT SEARCH ?
-
+//			COPY SELECTED ZONE / PASTE TO POSITION
 
 int AnchoValue = 0;
 int AltoValue = 8;
@@ -323,8 +323,8 @@ void limitPixelSize()
 {
 	if (pixelSize < 1)
 		pixelSize = 1;
-	else if (pixelSize > 8)
-		pixelSize = 8;
+	else if (pixelSize > 24)
+		pixelSize = 24;
 }
 
 
@@ -344,9 +344,23 @@ int getRelativePos()
 }
 
 
+void drawGrid()
+{
+	int	currentW = GetScreenWidth();
+	int currentH = GetScreenHeight();
+	for (size_t x = 0; x < currentW; x += pixelSize )
+	{
+		DrawLine(x, 0, x, currentH, WHITE);
+	}
+	for (size_t y = 0; y < currentH; y += pixelSize)
+	{
+		DrawLine(0, y, currentW, y, WHITE);
+	}
+}
 
 void rawEdit()
 {
+	drawGrid();
 	int charSize = font.w * 8 * pixelSize;
 	int rightLimit = (GetScreenWidth() / charSize) * charSize;
 	if (GetMouseX() > rightLimit) return;
