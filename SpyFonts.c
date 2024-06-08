@@ -22,6 +22,8 @@
 //			HACER EL SAVE FILE (half done - notificar de alguna manera si se ha grabado?)
 //			SOLO SALVAR SI SE HA MODIFICADO ALGO
 //			AVISAR SI SALIMOS Y HEMOS MODIFICADO EL FICHERO
+//			AUTOMATIC FONT SEARCH (PRIMERA APROXIMACION) 
+//			EL AUTOSEARCH SE QUEDA EN LO ENCONTRADO Y HAY QUE MOVERSE ADELANTE PARA BUSCR MAS. CAMBIAR ESO.
 
 
 
@@ -32,9 +34,9 @@
 //			USAR OTRO FONT MAS LEGIBLE
 //			USAR SHORTCUTS COHERENTES CON EL STANDARD
 //			SOLO DIBUJAR SI SE ACTUALIZA ALGO !!!
-//			USAR MOUSE WHEEL PARA DESPLAZARSE
+//			USAR MOUSE WHEEL PARA DESPLAZARSE O HACER ZOOM
 //			FIX EDIT MODE CON FONT DE 16 DE ANCHO
-//			AUTOMATIC FONT SEARCH? (PRIMERA APROXIMACION)
+//			ALGUN REQUESTER EN AUTOMATIC FONT SEARCH ?
 
 
 int AnchoValue = 0;
@@ -337,17 +339,18 @@ void rawEdit()
 	int rightLimit = (GetScreenWidth() / charSize) * charSize;
 	if (GetMouseX() > rightLimit) return;
 
-	int x = (GetMouseX() / pixelSize) * (font.w * pixelSize);
-	int y = (GetMouseY()  / pixelSize) * pixelSize;
+	int x = (GetMouseX() / pixelSize) * pixelSize;
+	int y = (GetMouseY() / pixelSize) * pixelSize;
 	DrawRectangle(x, y, pixelSize, pixelSize, RED);
-
-	int bufferPosition = file.position + gfxToBuffer();
-
-	int pixelShift = x / (font.w * pixelSize) % 8;
-	unsigned char byte = 0b10000000 >> pixelShift;
 
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 	{
+		//int bufferPosition = file.position + gfxToBuffer(GetMouseX(), GetMouseY());
+		int bufferPosition = file.position + gfxToBuffer((x/pixelSize), (y/pixelSize));
+
+		int pixelShift = x / (font.w * pixelSize) % 8;
+		unsigned char byte = 0b10000000 >> pixelShift;
+
 		spyBuffer[bufferPosition] ^= byte;
 		addUndo(bufferPosition, byte);
 		if (!modifiedFile)
@@ -364,18 +367,19 @@ void rawEdit()
 
 
 //devuelve la direccion en el buffer correspondiente a donde tenemos el cursor en pantalla
-int gfxToBuffer()
+//No funciona cuando el font.w es a 16 pixels
+int gfxToBuffer(int mx, int my)
 {
 	int currentW = GetScreenWidth();
 	int charSize = font.w * 8 * pixelSize;
+	int charsperLine = (currentW / charSize);
 
-	int charsperLargo = (currentW / charSize);
-	int x = ((GetMouseX() * charsperLargo) / (charSize * charsperLargo));     //currentW);
+	int xbyte = mx / (font.w * 8);
+	int x = xbyte;
 	x *= (font.w * font.h);
 
-	int y = (GetMouseY() / pixelSize);  //% font.h; // *pixelSize;
-	int yAbs = (y / (font.h)) *(charsperLargo * font.h);
-	y = y % font.h;
+	int yAbs = (my / font.h) * (charsperLine * font.h);
+	int y = my % font.h;
 
 	//printf("x: %d  y: %d  yAbs: %d\n", x, y, yAbs);
 
@@ -548,7 +552,7 @@ void setTitle()
 //ES UN MEGA BUCLE BASTANTE FEO. MIRAR SI SE PUEDE OPTIMIZAR.
 bool autoSearch()
 {
-	for (int pos = file.position; pos < file.size-8; pos++)
+	for (int pos = file.position+1; pos < file.size-8; pos++)
 	{
 		for (int font = 0; font < NUMFONTS; font++)
 		{

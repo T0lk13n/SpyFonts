@@ -113,7 +113,7 @@ void drawChar(unsigned char *drawfont, int posx, int posy);
 void checkInput();
 int  getRelativePos();
 void rawEdit();
-int  gfxToBuffer();
+int  gfxToBuffer(int mx, int my);
 void newPosition(long newPosition);
 void addUndo(int position, unsigned char byte);
 void unDo();
